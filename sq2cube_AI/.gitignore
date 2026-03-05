@@ -1,0 +1,19 @@
+# Ignore Python temporary files
+__pycache__/
+*.py[cod]
+
+# Ignore heavy AI models (don't upload GBs of data)
+models/*.pt
+models/*.pth
+models/*.bin
+models/*.onnx
+
+# Ignore 3D output files
+results/*.obj
+results/*.ply
+results/*.glb
+results/*.stl
+
+# Ignore virtual environments
+venv/
+.env/
