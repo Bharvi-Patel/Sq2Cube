@@ -12,6 +12,7 @@ const styles = {
     color: "white",
     textAlign: "center",
     padding: "15px",
+    marginTop: "auto",
   },
 };
 

@@ -9,21 +9,28 @@ import History from "./pages/History";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
+import HeroScene from "./pages/HeroScene";
+
+import GeneratorPage from "./components/upload/GeneratorPage"; // FIXED PATH
 
 function App() {
   return (
     <Router>
       <Header />
+
       <div style={{ minHeight: "80vh", padding: "20px" }}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/upload" element={<Upload />} />
+          <Route path="/hero" element={<HeroScene />} />
+          <Route path="/generator" element={<GeneratorPage />} />
           <Route path="/history" element={<History />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/profile" element={<Profile />} />
         </Routes>
       </div>
+
       <Footer />
     </Router>
   );

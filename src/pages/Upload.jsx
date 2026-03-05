@@ -5,6 +5,7 @@ const Upload = () => {
   return (
     <div className="upload-page">
       <UploadSection />
+      
     </div>
   );
 };

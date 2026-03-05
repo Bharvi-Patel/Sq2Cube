@@ -31,11 +31,17 @@ const Navbar = () => {
 
 const styles = {
   nav: {
+    position : "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
     display: "flex",
     justifyContent: "space-between",
     padding: "15px 40px",
 background: "linear-gradient(90deg, #1a1a1a, #222222)",
     color: "white",
+    zIndex: 1000,
+    boxSizing: "border-box",
   },
   logo: { fontWeight: "bold", fontSize: "18px" },
   links: { display: "flex", gap: "20px" },

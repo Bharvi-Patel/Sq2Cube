@@ -1,95 +1,118 @@
-import React, { useState } from "react";
-import ProcessingSection from "./ProcessingSection";
-import ResultSection from "./ResultSection";
+import { useState } from "react";
+import { FiUpload } from "react-icons/fi";
+import { MdImage } from "react-icons/md";
+import { BiTargetLock } from "react-icons/bi";
 
 const UploadSection = () => {
-  const [file, setFile] = useState(null);
-const [stage, setStage] = useState("upload");
-  const [prompt, setPrompt] = useState("");
+  const [tab, setTab] = useState("image");
+  const [textPrompt, setTextPrompt] = useState("");
+  const [image, setImage] = useState(null);
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+  // Handle file upload
+  const handleFile = (file) => {
+    if (!file) return;
+    const imageUrl = URL.createObjectURL(file);
+    setImage(imageUrl);
   };
 
-  const handleSubmit = (e) => {
+  // Drag events
+  const handleDrop = (e) => {
     e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    handleFile(file);
+  };
 
-    if (!file) {
-      alert("Please select a file");
-      return;
-    }
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
 
-    setStage("processing");
-
-    // Simulate API call
-
+  const handleInputChange = (e) => {
+    const file = e.target.files[0];
+    handleFile(file);
   };
 
   return (
-  <section className="upload-section">
-    <div className="upload-card">
+    <div className="prompt-container">
 
-      {stage === "upload" && (
-        <>
-          <h1>Convert Image to 3D</h1>
+      {/* Tabs */}
+      <div className="tabs">
+        <button
+          className={tab === "image" ? "active" : ""}
+          onClick={() => setTab("image")}
+        >
+          Image Prompt
+        </button>
 
-          <form onSubmit={handleSubmit}>
-            <label className="drop-area">
-              <input
-                type="file"
-                hidden
-                onChange={handleFileChange}
-              />
+        <button
+          className={tab === "text" ? "active" : ""}
+          onClick={() => setTab("text")}
+        >
+          Text Prompt
+        </button>
+      </div>
 
-              <p className="upload-main">
-                {file ? file.name : "Click to upload or drag and drop"}
-              </p>
+      {/* IMAGE TAB */}
+      {tab === "image" && (
+        <div
+          className="upload-box"
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+        >
+          {/* label */}
+          <div className="upload-label">
+            <MdImage size={14} /> Image
+          </div>
 
-              <span className="upload-sub">
-                PNG, JPG up to 10MB
-              </span>
-            </label>
+          {/* hidden input */}
+          <input
+            type="file"
+            accept="image/*"
+            id="imageUpload"
+            onChange={handleInputChange}
+            hidden
+          />
 
-            <p className="upload-description">
-              Upload an image and generate a 3D model.
-            </p>
+          {/* center area */}
+          <label htmlFor="imageUpload" className="upload-center">
 
-            <div className="prompt-container">
-              <label className="prompt-label">Enter Prompt</label>
-              <textarea
-                className="prompt-box"
-                placeholder="Describe how you want the 3D model to look..."
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-              />
-            </div>
+            {image ? (
+              <img src={image} alt="preview" className="preview-image" />
+            ) : (
+              <>
+                <FiUpload size={40} />
+                <p>Drop Image Here</p>
+                <p>- or -</p>
+                <span className="upload-text">Click to Upload</span>
+              </>
+            )}
 
-            <button className="convert-btn" type="submit">
-              Convert to 3D
-            </button>
-          </form>
-        </>
+          </label>
+
+          {/* bottom toolbar */}
+          <div className="upload-toolbar">
+            <FiUpload />
+            <BiTargetLock />
+            <MdImage />
+          </div>
+        </div>
       )}
 
-      {stage === "processing" && (
-        <ProcessingSection
-          file={file}
-          prompt={prompt}
-          onComplete={() => setStage("result")}
-        />
+      {/* TEXT TAB */}
+      {tab === "text" && (
+        <div className="text-box">
+          <textarea
+            placeholder="Describe the shape you want to generate..."
+            value={textPrompt}
+            onChange={(e) => setTextPrompt(e.target.value)}
+          />
+        </div>
       )}
 
-      {stage === "result" && (
-        <ResultSection
-          file={file}
-          prompt={prompt}
-          onBack={() => setStage("upload")}
-        />
-      )}
+      {/* BUTTON */}
+      <button className="gen-btn">Gen Shape</button>
 
     </div>
-  </section>
-);
+  );
 };
 
 export default UploadSection;

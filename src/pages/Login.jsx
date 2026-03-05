@@ -38,12 +38,18 @@ const Login = () => {
             />
           </div>
 
+          <div className="forgot-password">
+            <a href="/forgot-password">Forgot Password?</a>
+          </div>
+
           <button className="auth-btn" type="submit">
             Login
           </button>
+
           <p className="auth-switch">
-  Or <span>Create account</span>
-</p>
+            Or <span>Create account</span>
+          </p>
+
         </form>
       </div>
     </section>
