@@ -20,11 +20,12 @@
 }
 
 .preview-panel {
-  width: 500px;
+  max-width: 700px;
   min-height: 350px;
   background: #111;
   border-radius: 12px;
   padding: 20px;
+  margin-top: 40px;
 }
 
 /* top tabs */
@@ -47,15 +48,32 @@
 
 /* preview box */
 .preview-box {
-  border: 1px dashed rgba(255,255,255,0.2);
-  border-radius: 10px;
-  height: 300px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 100%;
+  height: 520px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  background: #020b1b;
+  position: relative;
 }
 
 .preview-content {
   text-align: center;
   opacity: 0.7;
+}
+
+.upload-page{
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+  padding: 40px;
+  align-items: flex-start;
+}
+
+.prompt-container{
+  width: 400px;
+}
+
+.preview-panel{
+  flex: 1;
+  margin-top: 40px;
 }
