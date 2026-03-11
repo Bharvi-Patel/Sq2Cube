@@ -9,9 +9,12 @@ import History from "./pages/History";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
-import HeroScene from "./pages/HeroScene";
+import ForgetPass from "./pages/ForgetPass.jsx";
+import ProfileSetup from "./pages/ProfileSetup.jsx";  
 
-import GeneratorPage from "./components/upload/GeneratorPage"; // FIXED PATH
+import GeneratorPage from "./components/upload/GeneratorPage"; 
+
+import Robot from "./components/upload/Robot";
 
 function App() {
   return (
@@ -22,12 +25,16 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/upload" element={<Upload />} />
-          <Route path="/hero" element={<HeroScene />} />
+          
           <Route path="/generator" element={<GeneratorPage />} />
+          <Route path="/robot" element={<Robot />} />
           <Route path="/history" element={<History />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile" element
+          ={<Profile />} />
+          <Route path="/forgetPass" element={<ForgetPass/>} />
+          <Route path="/profileSetup" element={<ProfileSetup />} />
         </Routes>
       </div>
 

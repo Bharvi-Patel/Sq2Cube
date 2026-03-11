@@ -11,7 +11,7 @@ body {
   margin: 0;
   background: linear-gradient(
     135deg,
-    #0d0d0d,
+    black,
     #1a1a1a,
     #ff7a00
   );
@@ -655,7 +655,7 @@ background: linear-gradient(
   background: #111;
   border-radius: 12px;
   padding: 20px;
-  margin-top: 40px;
+  margin-top: 70px;
 }
 
 /* top tabs */
@@ -689,6 +689,7 @@ background: linear-gradient(
 .preview-content {
   text-align: center;
   opacity: 0.7;
+  
 }
 
 .export-btn{

@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Signup = () => {
+
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -14,7 +17,16 @@ const Signup = () => {
       return;
     }
 
+    // Save login state
+    localStorage.setItem("isLoggedIn", "true");
+
+    // Optional: store email
+    localStorage.setItem("userEmail", email);
+
     alert("Account created successfully!");
+
+    // Redirect to Profile Setup page
+    navigate("/profileSetup");
   };
 
   return (
@@ -54,9 +66,7 @@ const Signup = () => {
               type="password"
               placeholder="Confirm your password"
               value={confirmPassword}
-              onChange={(e) =>
-                setConfirmPassword(e.target.value)
-              }
+              onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
           </div>
@@ -67,7 +77,7 @@ const Signup = () => {
 
           <p className="auth-switch">
             Already have an account?{" "}
-            <span>Login</span>
+            <Link to="/login">Login here</Link>
           </p>
         </form>
       </div>

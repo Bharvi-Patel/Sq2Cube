@@ -35,7 +35,7 @@ const PreviewPanel = () => {
 
         {tab === "generated" && (
           <div className="preview-content">
-            <p>Welcome to Sq2Cube!</p>
+            
             <p>No mesh generated yet.</p>
           </div>
         )}

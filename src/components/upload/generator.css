@@ -1,79 +1,348 @@
-.generator-container {
-  display: flex;
 
-  justify-content: center;
-  align-items: flex-start;
-  gap: 40px;
-  margin-top: 40px;
-}
-
-/* Upload / Prompt section */
-.generator-container > :first-child {
-  flex: 1;
-  max-width: 400px;
-}
-
-/* Preview panel */
-.generator-container > :last-child {
-  flex: 1;
-  max-width: 500px;
-}
-
-.preview-panel {
-  max-width: 700px;
-  min-height: 350px;
-  background: #111;
-  border-radius: 12px;
-  padding: 20px;
-  margin-top: 40px;
-}
-
-/* top tabs */
-.preview-tabs {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 15px;
-  font-size: 14px;
-}
-
-.preview-tabs span {
-  opacity: 0.6;
-  cursor: pointer;
-}
-
-.preview-tabs .active {
-  opacity: 1;
-  color: #ff7a00;
-}
-
-/* preview box */
-.preview-box {
-  width: 100%;
-  height: 520px;
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 12px;
-  background: #020b1b;
-  position: relative;
-}
-
-.preview-content {
-  text-align: center;
-  opacity: 0.7;
-}
-
+/* PAGE LAYOUT */
 .upload-page{
-  display: flex;
-  flex-direction: row;
-  gap: 40px;
-  padding: 40px;
-  align-items: flex-start;
+  display:flex;
+  flex-direction:row;
+  gap:40px;
+  padding:40px;
+  align-items:flex-start;
 }
 
+/* LEFT PANEL */
 .prompt-container{
-  width: 400px;
+  width:400px;
+  margin-left: 1%;
 }
 
+/* RIGHT PANEL */
 .preview-panel{
-  flex: 1;
-  margin-top: 40px;
+  flex:1;
+  max-width:550px;
+  min-height:700px;
+  background:#111;
+  border-radius:12px;
+  padding:20px;
+  
+  margin-right: 10%;
+
 }
+
+/* PREVIEW TABS */
+.preview-tabs{
+  display:flex;
+  gap:20px;
+  margin-bottom:15px;
+  font-size:14px;
+}
+
+.preview-tabs span{
+  opacity:0.6;
+  cursor:pointer;
+}
+
+.preview-tabs .active{
+  opacity:1;
+  color:#ff7a00;
+}
+
+/* PREVIEW BOX */
+.preview-box{
+  width:100%;
+  height:520px;
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:12px;
+  background:#020b1b;
+  position:relative;
+}
+
+.preview-content{
+  text-align:center;
+  opacity:0.7;
+}
+
+
+.upload-box{
+  width:100%;
+  height:260px;
+  border:1px dashed rgba(255,255,255,0.2);
+  border-radius:12px;
+  background:#020b1b;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+/* TOP LABEL */
+
+.upload-label{
+  position:absolute;
+  top:10px;
+  left:10px;
+  background:#111827;
+  padding:3px 8px;
+  border-radius:6px;
+  font-size:12px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
+/* CENTER CONTENT */
+
+.upload-center{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  gap:6px;
+  height:100%;
+  cursor:pointer;
+  color:#cbd5e1;
+}
+
+.upload-text{
+  color:#60a5fa;
+}
+
+/* PREVIEW IMAGE */
+
+.preview-image{
+  max-height:200px;
+  border-radius:8px;
+}
+
+/* ================= WEBCAM ================= */
+
+.webcam-box{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  color:#cbd5e1;
+}
+
+.webcam-video{
+  width:200px;
+  border-radius:8px;
+  margin-top:8px;
+}
+
+/* ================= CLIPBOARD ================= */
+
+.clipboard-box{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  color:#cbd5e1;
+}
+
+/* ================= TOOLBAR ================= */
+
+.upload-toolbar{
+  position:absolute;
+  bottom:8px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:20px;
+  background:#111827;
+  padding:6px 14px;
+  border-radius:20px;
+  font-size:18px;
+}
+
+.upload-toolbar svg{
+  cursor:pointer;
+  opacity:0.6;
+  transition:0.2s;
+}
+
+.upload-toolbar svg:hover{
+  opacity:1;
+}
+
+.active-icon{
+  color:#3b82f6;
+  opacity:1 !important;
+}
+
+
+.text-box textarea{
+  width:100%;
+  height:120px;
+  background:#020b1b;
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:10px;
+  padding:12px;
+  color:white;
+  resize:none;
+}
+
+/* ================= GENERATE BUTTON ================= */
+
+.gen-btn{
+  width:100%;
+  margin-top:15px;
+  background:#3b82f6;
+  border:none;
+  padding:10px;
+  border-radius:8px;
+  color:white;
+  cursor:pointer;
+  font-weight:500;
+}
+
+.gen-btn:hover{
+  background:#2563eb;
+}
+
+/* ================= OPTIONS PANEL ================= */
+
+.export-container{
+  margin-top:20px;
+  background:#111827;
+  border-radius:10px;
+  padding:15px;
+}
+
+/* TABS */
+
+.export-tabs{
+  display:flex;
+  gap:15px;
+  margin-bottom:15px;
+  border-bottom:1px solid #2d3748;
+}
+
+.export-tabs .tab{
+  background:none;
+  border:none;
+  color:#9ca3af;
+  cursor:pointer;
+  padding:6px 0;
+  font-size:14px;
+}
+
+.export-tabs .active{
+  color:white;
+  border-bottom:2px solid #4f7cff;
+}
+
+/* CARD */
+
+.export-box{
+  background:#1f2937;
+  padding:15px;
+  border-radius:8px;
+}
+
+/* ROW */
+
+.export-row{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+
+/* FILE SELECT */
+
+.file-type{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.file-type select{
+  background:#374151;
+  border:none;
+  padding:8px;
+  border-radius:6px;
+  color:white;
+}
+
+/* SLIDER AREA */
+
+.target-face{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  width:100%;
+}
+
+.slider-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.slider-row input[type="range"]{
+  flex:1;
+  accent-color:#4f7cff;
+}
+
+/* VALUE BOX */
+
+.face-number{
+  background:#374151;
+  padding:5px 12px;
+  border-radius:6px;
+  font-size:13px;
+}
+
+/* NUMBER INPUT */
+
+.target-face input[type="number"]{
+  background:#374151;
+  border:none;
+  border-radius:6px;
+  padding:6px;
+  color:white;
+  width:100px;
+}
+
+/* CHECKBOX LABEL */
+
+.export-row label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:14px;
+}
+
+/* BUTTON AREA */
+
+.export-actions{
+  display:flex;
+  gap:10px;
+  margin-top:15px;
+}
+
+.transform-btn{
+  flex:1;
+  background:#374151;
+  border:none;
+  padding:10px 15px;
+  border-radius:6px;
+  color:white;
+  cursor:pointer;
+}
+
+.download-btn{
+  flex:1;
+  background:#3b82f6;
+  border:none;
+  padding:10px 15px;
+  border-radius:6px;
+  color:white;
+  cursor:pointer;
+}
+
+.download-btn:hover{
+  background:#2563eb;
+}
+
