@@ -6,7 +6,7 @@ import { MdImage } from "react-icons/md";
 const UploadSection = () => {
 
   const [tab, setTab] = useState("image");
-  const [panelTab, setPanelTab] = useState("advanced");
+ 
   const [uploadMode, setUploadMode] = useState("upload");
 
   const videoRef = useRef(null);
@@ -14,20 +14,7 @@ const UploadSection = () => {
   const [textPrompt, setTextPrompt] = useState("");
   const [image, setImage] = useState(null);
 
-  const [fileType, setFileType] = useState("glb");
-  const [targetFaces, setTargetFaces] = useState(10000);
-  const [simplifyMesh, setSimplifyMesh] = useState(false);
-
-  const [removeBg, setRemoveBg] = useState(true);
-  const [randomSeed, setRandomSeed] = useState(true);
-
-  const [seed, setSeed] = useState(1234);
-  const [steps, setSteps] = useState(30);
-  const [resolution, setResolution] = useState(256);
-
-  const [guidance, setGuidance] = useState(5);
-  const [chunks, setChunks] = useState(8000);
-
+  
   /* FILE UPLOAD */
   const handleFile = (file) => {
     if (!file) return;
@@ -195,178 +182,8 @@ const UploadSection = () => {
       {/* GENERATE BUTTON */}
       <button className="gen-btn">Gen Shape</button>
 
-      {/* OPTIONS PANEL */}
-      <div className="export-container">
-
-        <div className="export-tabs">
-          <button
-            className={panelTab === "advanced" ? "tab active" : "tab"}
-            onClick={()=>setPanelTab("advanced")}
-          >
-            Advanced Options
-          </button>
-
-          <button
-            className={panelTab === "export" ? "tab active" : "tab"}
-            onClick={()=>setPanelTab("export")}
-          >
-            Export
-          </button>
-        </div>
-
-        {/* ADVANCED */}
-        {panelTab === "advanced" && (
-          <div className="export-box">
-
-            <div className="export-row">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={removeBg}
-                  onChange={()=>setRemoveBg(!removeBg)}
-                />
-                Remove Background
-              </label>
-
-              <label>
-                <input
-                  type="checkbox"
-                  checked={randomSeed}
-                  onChange={()=>setRandomSeed(!randomSeed)}
-                />
-                Randomize Seed
-              </label>
-            </div>
-
-            <div className="target-face">
-              <label>Seed</label>
-              <div className="slider-row">
-                <input
-                  type="range"
-                  min="0"
-                  max="9999"
-                  value={seed}
-                  onChange={(e)=>setSeed(e.target.value)}
-                />
-                <div className="face-number">{seed}</div>
-              </div>
-            </div>
-
-            <div className="export-row">
-
-              <div className="target-face">
-                <label>Inference Steps</label>
-                <div className="slider-row">
-                  <input
-                    type="range"
-                    min="1"
-                    max="100"
-                    value={steps}
-                    onChange={(e)=>setSteps(e.target.value)}
-                  />
-                  <div className="face-number">{steps}</div>
-                </div>
-              </div>
-
-              <div className="target-face">
-                <label>Octree Resolution</label>
-                <div className="slider-row">
-                  <input
-                    type="range"
-                    min="64"
-                    max="512"
-                    value={resolution}
-                    onChange={(e)=>setResolution(e.target.value)}
-                  />
-                  <div className="face-number">{resolution}</div>
-                </div>
-              </div>
-
-            </div>
-
-            <div className="export-row">
-
-              <div className="target-face">
-                <label>Guidance Scale</label>
-                <input
-                  type="number"
-                  value={guidance}
-                  onChange={(e)=>setGuidance(e.target.value)}
-                />
-              </div>
-
-              <div className="target-face">
-                <label>Number of Chunks</label>
-                <div className="slider-row">
-                  <input
-                    type="range"
-                    min="1000"
-                    max="20000"
-                    value={chunks}
-                    onChange={(e)=>setChunks(e.target.value)}
-                  />
-                  <div className="face-number">{chunks}</div>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-        )}
-
-        {/* EXPORT */}
-        {panelTab === "export" && (
-          <div className="export-box">
-
-            <div className="export-row">
-
-              <div className="file-type">
-                <label>File Type</label>
-                <select
-                  value={fileType}
-                  onChange={(e)=>setFileType(e.target.value)}
-                >
-                  <option value="glb">glb</option>
-                  <option value="obj">obj</option>
-                  <option value="fbx">fbx</option>
-                </select>
-              </div>
-
-              <label>
-                <input
-                  type="checkbox"
-                  checked={simplifyMesh}
-                  onChange={()=>setSimplifyMesh(!simplifyMesh)}
-                />
-                Simplify Mesh
-              </label>
-
-            </div>
-
-            <div className="target-face">
-              <label>Target Face Number</label>
-              <div className="slider-row">
-                <input
-                  type="range"
-                  min="1000"
-                  max="50000"
-                  step="1000"
-                  value={targetFaces}
-                  onChange={(e)=>setTargetFaces(e.target.value)}
-                />
-                <div className="face-number">{targetFaces}</div>
-              </div>
-            </div>
-
-            <div className="export-actions">
-              <button className="transform-btn">Transform</button>
-              <button className="download-btn">Download</button>
-            </div>
-
-          </div>
-        )}
-
-      </div>
+      
+ 
 
     </div>
   );

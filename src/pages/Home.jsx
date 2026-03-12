@@ -32,9 +32,6 @@ return ( <div className="home">
 
         <div className="hero-buttons">
 
-  <Link to="/docs" className="btn-docs">
-    Documentation 
-  </Link>
 
   <Link to="/Login" className="btn-start">
     Get Started 
@@ -52,28 +49,52 @@ return ( <div className="home">
     </main>
 
 
-    {/* HOW IT WORKS */}
-    <section className="how-section">
-      <h2>How Sq2Cube Works</h2>
+    <section className="steps-section">
 
-      <div className="steps-grid">
+      <h1 className="steps-title">How to Convert 2D Image to 3D</h1>
+
+      <div className="steps-container">
+
+        {/* STEP 1 */}
         <div className="step-card">
-          <h3>1️⃣ Upload Image</h3>
-          <p>Select a photo or sketch you want to convert.</p>
+          <img src="/public/upload.png" alt="Upload Image" />
+
+          <h3>Step 1. Upload Your Photo</h3>
+
+          <p>
+            Let's begin with uploading an image. It can be portraits,
+            characters, animals or logos. A clear and concise image
+            will generate better results.
+          </p>
         </div>
 
+        {/* STEP 2 */}
         <div className="step-card">
-          <h3>2️⃣ AI Processing</h3>
-          <p>Our AI analyzes the structure and depth.</p>
+          <img src="/public/choose3d.png" alt="Choose Effect" />
+
+          <h3>Step 2. Choose a Desired 3D Effect</h3>
+
+          <p>
+            After uploading your photo, select from multiple 3D
+            transformation styles to generate a realistic model.
+          </p>
         </div>
 
+        {/* STEP 3 */}
         <div className="step-card">
-          <h3>3️⃣ Generate 3D</h3>
-          <p>The system builds a complete 3D model.</p>
+          <img src="/public/image.png" alt="Download 3D" />
+
+          <h3>Step 3. Download Your First 3D Creation</h3>
+
+          <p>
+            Your 2D image will be converted into a detailed 3D
+            model ready for preview and download.
+          </p>
         </div>
+
       </div>
-    </section>
 
+    </section>
 
     {/* FEATURES */}
     <section className="features-section">
@@ -92,7 +113,7 @@ return ( <div className="home">
     <section className="cta-section">
       <h2>Ready to Convert Your Image?</h2>
 
-      <Link to="/upload">
+      <Link to="/Login">
         <button className="cta-btn">Upload Image</button>
       </Link>
     </section>

@@ -18,9 +18,12 @@ const Login = () => {
 
     console.log(email, password);
 
+    // save login state
+    localStorage.setItem("isLoggedIn", "true");
+
     alert("Logged in successfully!");
 
-    // redirect to profile setup page
+    // redirect to profile setup
     navigate("/profileSetup");
   };
 

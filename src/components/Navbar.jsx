@@ -3,23 +3,16 @@ import "./Navbar.css";
 
 const Navbar = () => {
 
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
   const profilePic = localStorage.getItem("profilePic");
 
   return (
     <nav className="navbar">
 
       {/* LEFT LOGO */}
-      <div className="logo">
-        <Link to="/" className="logo-wrapper">
-          <img
-            src="/LS20260227110715.png"
-            alt="Sq2Cube Logo"
-            className="logo-image"
-          />
-          <span className="logo-text">Sq2Cube</span>
-        </Link>
-      </div>
+      <Link to="/" className="logo-wrapper">
+        <img src="/public/LS20260227110715.png" alt="logo" className="logo-image"/>
+        <span className="logo-text">Sq2Cube</span>
+      </Link>
 
       {/* CENTER NAV */}
       <div className="nav-links">
@@ -31,23 +24,21 @@ const Navbar = () => {
       {/* RIGHT SIDE */}
       <div className="auth-links">
 
-        {isLoggedIn ? (
+        {profilePic ? (
 
-          profilePic ? (
-            <Link to="/profile">
-              <img
-                src={profilePic}
-                alt="Profile"
-                className="nav-profile"
-              />
-            </Link>
-          ) : null
+          <Link to="/profile">
+            <img
+              src={profilePic}
+              alt="profile"
+              className="nav-profile"
+            />
+          </Link>
 
         ) : (
 
           <>
-            <Link to="/login">Login</Link>
-            <Link to="/signup">Signup</Link>
+            <Link to="/Login">Login</Link>
+            <Link to="/Signup">Signup</Link>
           </>
 
         )}

@@ -4,18 +4,8 @@ import { useNavigate } from "react-router-dom";
 
 const ProfileSetup = () => {
 
-    const handleLogout = () => {
-  localStorage.removeItem("isLoggedIn");
-  localStorage.removeItem("profilePic");
-  localStorage.removeItem("userProfile");
-
-
-  navigate("/login");
-};
-
   const navigate = useNavigate();
 
-  // Load saved image from localStorage
   const [image, setImage] = useState(() => {
     return localStorage.getItem("profilePic") || null;
   });
@@ -26,7 +16,7 @@ const ProfileSetup = () => {
   const [dob, setDob] = useState("");
   const [about, setAbout] = useState("");
 
-  // Handle image upload
+  // Upload profile image
   const handleImageChange = (e) => {
     const file = e.target.files[0];
 
@@ -38,7 +28,7 @@ const ProfileSetup = () => {
     }
   };
 
-  // Handle form submit
+  // Save profile
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -55,8 +45,18 @@ const ProfileSetup = () => {
 
     alert("Profile saved successfully!");
 
-    // redirect to upload page
     navigate("/upload");
+    window.location.reload(); // refresh navbar
+  };
+
+  // Logout
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("profilePic");
+    localStorage.removeItem("userProfile");
+
+    navigate("/login");
+    window.location.reload();
   };
 
   return (
@@ -154,12 +154,13 @@ const ProfileSetup = () => {
           </button>
 
           <button
-  type="button"
-  className="logout-btn"
-  onClick={handleLogout}
->
-  Logout
-</button>
+            type="button"
+            className="logout-btn"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+
         </form>
 
       </div>

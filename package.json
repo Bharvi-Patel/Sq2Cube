@@ -1,8 +1,20 @@
 {
   "name": "sq2cube",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
+  "description": "Sq2Cube_AI is an AI-powered system that converts a single 2D image of an object into a 3D mesh model using pretrained generative 3D models and intelligent preprocessing.",
+  "homepage": "https://github.com/Bharvi-Patel/Sq2Cube#readme",
+  "bugs": {
+    "url": "https://github.com/Bharvi-Patel/Sq2Cube/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bharvi-Patel/Sq2Cube.git"
+  },
+  "license": "ISC",
+  "author": "",
   "type": "module",
+  "main": "eslint.config.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -14,6 +26,7 @@
     "@react-three/fiber": "^9.5.0",
     "@splinetool/react-spline": "^4.1.0",
     "firebase": "^12.10.0",
+    "lucide-react": "^0.577.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-icons": "^5.6.0",
