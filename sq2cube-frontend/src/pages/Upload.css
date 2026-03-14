@@ -1,0 +1,323 @@
+/* ── Upload Page Layout ── */
+.upload-page {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 32px;
+  padding: 100px 40px 60px;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* ── Left: Input Panel ── */
+.prompt-container {
+  flex: 0 0 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Right: Preview Panel — STICKY ── */
+.preview-panel {
+  flex: 1;
+  position: sticky;
+  top: 80px;               /* stays below navbar */
+  height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: #111827;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 20px;
+  overflow: hidden;
+}
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  gap: 10px;
+}
+
+.tabs button {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: transparent;
+  color: rgba(255,255,255,0.6);
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.tabs button.active {
+  background: white;
+  color: #0d0d0d;
+  border-color: white;
+  font-weight: 600;
+}
+
+/* ── Upload Box ── */
+.upload-box {
+  background: #1e293b;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.upload-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.upload-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  cursor: pointer;
+  color: rgba(255,255,255,0.6);
+  text-align: center;
+  padding: 20px;
+  gap: 8px;
+}
+
+.upload-center label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.upload-text {
+  color: #3b82f6;
+  font-size: 14px;
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 180px;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.webcam-box,
+.clipboard-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  color: rgba(255,255,255,0.6);
+}
+
+.webcam-video {
+  width: 100%;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+/* ── Upload Toolbar ── */
+.upload-toolbar {
+  display: flex;
+  gap: 20px;
+  padding: 12px 16px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.4);
+}
+
+.upload-toolbar svg {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.upload-toolbar svg:hover,
+.active-icon {
+  color: white !important;
+}
+
+/* ── Text Box ── */
+.text-box textarea {
+  width: 100%;
+  min-height: 220px;
+  background: #1e293b;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 16px;
+  color: white;
+  font-size: 14px;
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.text-box textarea::placeholder {
+  color: rgba(255,255,255,0.35);
+}
+
+/* ── Generate Button ── */
+.gen-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: #3b5bff;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.gen-btn:hover {
+  background: #2a46e0;
+}
+
+/* ── Preview Panel internals ── */
+.preview-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+}
+
+.preview-box {
+  flex: 1;
+  background: #0d1117;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.preview-content {
+  color: rgba(255,255,255,0.35);
+  font-size: 14px;
+  text-align: center;
+}
+
+.toolbar-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: rgba(255,255,255,0.5);
+  padding: 4px 0;
+}
+
+.toolbar-main svg {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.toolbar-main svg:hover {
+  color: white;
+}
+
+.color {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.color:hover {
+  border-color: white;
+}
+
+.color.purple { background: #8b5cf6; }
+.color.orange { background: #ff7a00; }
+.color.gray   { background: #6b7280; }
+.color.cyan   { background: #06b6d4; }
+
+.toolbar-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.left-actions,
+.right-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255,255,255,0.5);
+}
+
+.right-actions svg {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.right-actions svg:hover {
+  color: white;
+}
+
+.workspace-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: transparent;
+  color: white;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.workspace-btn:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.export-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  background: #ff7a00;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.export-btn:hover {
+  background: #e06900;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .upload-page {
+    flex-direction: column;
+    padding: 80px 20px 40px;
+  }
+
+  .prompt-container {
+    flex: none;
+    width: 100%;
+  }
+
+  .preview-panel {
+    position: static;
+    height: 400px;
+    width: 100%;
+  }
+}

@@ -1,48 +1,52 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.css";
+import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const { isLoggedIn, user, logout } = useAuth();
 
-  const profilePic = localStorage.getItem("profilePic");
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   return (
     <nav className="navbar">
 
-      {/* LEFT LOGO */}
       <Link to="/" className="logo-wrapper">
-        <img src="/public/LS20260227110715.png" alt="logo" className="logo-image"/>
+        <img src="/LS20260227110715.png" alt="logo" className="logo-image" />
         <span className="logo-text">Sq2Cube</span>
       </Link>
 
-      {/* CENTER NAV */}
       <div className="nav-links">
         <Link to="/">Home</Link>
-        <Link to="/upload">Upload</Link>
-        <Link to="/history">History</Link>
+        {isLoggedIn && <Link to="/upload">Upload</Link>}
+        {isLoggedIn && <Link to="/history">History</Link>}
       </div>
 
-      {/* RIGHT SIDE */}
       <div className="auth-links">
-
-        {profilePic ? (
-
-          <Link to="/profile">
-            <img
-              src={profilePic}
-              alt="profile"
-              className="nav-profile"
-            />
-          </Link>
-
-        ) : (
-
+        {isLoggedIn ? (
           <>
-            <Link to="/Login">Login</Link>
-            <Link to="/Signup">Signup</Link>
+            <Link to="/profile">
+              {user?.profile_image ? (
+                <img src={user.profile_image} alt="profile" className="nav-profile" />
+              ) : (
+                <div className="nav-profile-placeholder">
+                  {user?.username?.[0]?.toUpperCase() || "U"}
+                </div>
+              )}
+            </Link>
+            <button className="logout-nav-btn" onClick={handleLogout}>
+              Logout
+            </button>
           </>
-
+        ) : (
+          <>
+            <Link to="/login">Login</Link>
+            <Link to="/signup">Signup</Link>
+          </>
         )}
-
       </div>
 
     </nav>

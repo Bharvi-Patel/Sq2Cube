@@ -1,41 +1,44 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { api } from "../services/api";
 
 const Login = () => {
-
-  const [email, setEmail] = useState("");
+  const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError]       = useState("");
+  const [loading, setLoading]   = useState(false);
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    if (!email || !password) {
-      alert("Please enter email and password");
-      return;
+    try {
+      const data = await api("/login", {
+        method: "POST",
+        body: { email, password }
+      });
+
+      await login(data.token);  // sets token, fetches user from DB
+      navigate("/");
+    } catch (err) {
+      setError(err.message || "Incorrect email or password");
+    } finally {
+      setLoading(false);
     }
-
-    console.log(email, password);
-
-    // save login state
-    localStorage.setItem("isLoggedIn", "true");
-
-    alert("Logged in successfully!");
-
-    // redirect to profile setup
-    navigate("/profileSetup");
   };
 
   return (
     <section className="auth-section">
       <div className="auth-card">
-
         <h1>Welcome Back</h1>
         <p className="auth-subtitle">Login to your Sq2Cube account</p>
 
         <form onSubmit={handleLogin}>
-
           <div className="input-group">
             <label>Email</label>
             <input
@@ -62,16 +65,20 @@ const Login = () => {
             <Link to="/forgetPass">Forgot Password?</Link>
           </div>
 
-          <button className="auth-btn" type="submit">
-            Login
+          {error && (
+            <p style={{ color: "#ef4444", marginBottom: "10px", fontSize: "14px" }}>
+              {error}
+            </p>
+          )}
+
+          <button className="auth-btn" type="submit" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
           </button>
 
           <p className="auth-switch">
-            Or <Link to="/signup">Create account</Link>
+            Don't have an account? <Link to="/signup">Sign up here</Link>
           </p>
-
         </form>
-
       </div>
     </section>
   );

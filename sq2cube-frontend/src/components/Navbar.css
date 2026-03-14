@@ -1,77 +1,116 @@
-.navbar{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:15px 60px;
-background:black;
-color:white;
-z-index:1000;
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 60px;
+  background: black;
+  color: white;
+  z-index: 1000;
+  box-sizing: border-box;
 }
 
 /* LOGO */
-
-.logo-wrapper{
-display:flex;
-align-items:center;
-gap:10px;
-text-decoration:none;
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
 }
 
-.logo-image{
-height:35px;
+.logo-image {
+  height: 35px;
 }
 
-.logo-text{
-font-size:28px;
-font-weight:600;
-color:#ff8c00;
+.logo-text {
+  font-size: 28px;
+  font-weight: 600;
+  color: #ff8c00;
 }
 
 /* NAV LINKS */
-
-.nav-links{
-display:flex;
-gap:40px;
+.nav-links {
+  display: flex;
+  gap: 40px;
 }
 
-.nav-links a{
-text-decoration:none;
-color:white;
-font-size:16px;
+.nav-links a {
+  text-decoration: none;
+  color: white;
+  font-size: 16px;
 }
 
-.nav-links a:hover{
-color:#ff8c00;
+.nav-links a:hover {
+  color: #ff8c00;
 }
 
 /* RIGHT SIDE */
-
-.auth-links{
-display:flex;
-gap:20px;
-align-items:center;
+.auth-links {
+  display: flex;
+  gap: 20px;
+  align-items: center;
 }
 
-.auth-links a{
-text-decoration:none;
-color:white;
+.auth-links a {
+  text-decoration: none;
+  color: white;
 }
 
-.auth-links a:hover{
-color:#ff8c00;
+.auth-links a:hover {
+  color: #ff8c00;
 }
 
-/* PROFILE */
+/* PROFILE IMAGE */
+.nav-profile {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid #ff7a00;
+  transition: transform 0.2s ease;
+  display: block;
+}
 
-.nav-profile{
-width:40px;
-height:40px;
-border-radius:50%;
-object-fit:cover;
-cursor:pointer;
-border:2px solid #ff8c00;
+.nav-profile:hover {
+  transform: scale(1.1);
+}
+
+/* PROFILE PLACEHOLDER (when no image yet) */
+.nav-profile-placeholder {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #ff7a00;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  border: 2px solid #ff7a00;
+  transition: transform 0.2s ease;
+}
+
+.nav-profile-placeholder:hover {
+  transform: scale(1.1);
+}
+
+.logout-nav-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.logout-nav-btn:hover {
+  color: #ff8c00;
 }

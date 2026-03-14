@@ -1,63 +1,77 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./ProfileSetup.css";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { api } from "../services/api";
 
 const ProfileSetup = () => {
-
   const navigate = useNavigate();
+  const { refreshUser } = useAuth();
 
-  const [image, setImage] = useState(() => {
-    return localStorage.getItem("profilePic") || null;
-  });
-
+  const [image, setImage]       = useState(null);
   const [username, setUsername] = useState("");
-  const [gender, setGender] = useState("");
-  const [phone, setPhone] = useState("");
-  const [dob, setDob] = useState("");
-  const [about, setAbout] = useState("");
+  const [gender, setGender]     = useState("");
+  const [phone, setPhone]       = useState("");
+  const [dob, setDob]           = useState("");
+  const [about, setAbout]       = useState("");
+  const [loading, setLoading]   = useState(false);
+  const [fetching, setFetching] = useState(true);
 
-  // Upload profile image
-  const handleImageChange = (e) => {
+  // Pre-fill all fields from the database
+  useEffect(() => {
+    api("/profile/me")
+      .then((data) => {
+        setUsername(data.username || "");
+        setAbout(data.bio || "");
+        setGender(data.gender || "");
+        setPhone(data.phone || "");
+        setDob(data.dob || "");
+        if (data.profile_image) setImage(data.profile_image);
+      })
+      .catch(() => {})
+      .finally(() => setFetching(false));
+  }, []);
+
+  const toBase64 = (file) =>
+    new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.readAsDataURL(file);
+    });
+
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
+    if (!file) return;
+    const base64 = await toBase64(file);
+    setImage(base64);
+  };
 
-    if (file) {
-      const imageURL = URL.createObjectURL(file);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-      setImage(imageURL);
-      localStorage.setItem("profilePic", imageURL);
+    try {
+      await api("/profile/setup", {
+        method: "POST",
+        body: { username, bio: about, profile_image: image, gender, phone, dob }
+      });
+
+      await refreshUser();
+      navigate("/profile");
+    } catch (err) {
+      alert(err.message || "Failed to save profile");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Save profile
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const profileData = {
-      username,
-      gender,
-      phone,
-      dob,
-      about,
-      profilePic: image
-    };
-
-    localStorage.setItem("userProfile", JSON.stringify(profileData));
-
-    alert("Profile saved successfully!");
-
-    navigate("/upload");
-    window.location.reload(); // refresh navbar
-  };
-
-  // Logout
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("profilePic");
-    localStorage.removeItem("userProfile");
-
-    navigate("/login");
-    window.location.reload();
-  };
+  if (fetching) return (
+    <section className="profile-page">
+      <div className="profile-card">
+        <p style={{ textAlign:"center", color:"white", opacity:0.6 }}>Loading...</p>
+      </div>
+    </section>
+  );
 
   return (
     <section className="profile-page">
@@ -65,32 +79,22 @@ const ProfileSetup = () => {
 
         {/* Profile Image */}
         <div className="profile-image-wrapper">
-
           <label htmlFor="profileUpload">
-            <div
-              className="profile-circle"
+            <div className="profile-circle"
               style={{
-                backgroundImage: image ? `url(${image})` : "none"
-              }}
-            >
+                backgroundImage: image ? `url(${image})` : "none",
+                backgroundSize: "cover",
+                backgroundPosition: "center"
+              }}>
               {!image && <span>+</span>}
             </div>
           </label>
-
-          <input
-            id="profileUpload"
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            hidden
-          />
-
+          <input id="profileUpload" type="file" accept="image/*"
+            onChange={handleImageChange} hidden />
         </div>
 
-        <h2>Complete your profile</h2>
-        <p className="profile-subtitle">
-          One last step to join the community
-        </p>
+        <h2>Edit your profile</h2>
+        <p className="profile-subtitle">Update your details below</p>
 
         <form onSubmit={handleSubmit}>
 
@@ -107,15 +111,11 @@ const ProfileSetup = () => {
 
           <div className="input-group">
             <label>Gender</label>
-            <select
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
-              required
-            >
+            <select value={gender} onChange={(e) => setGender(e.target.value)}>
               <option value="">Select</option>
-              <option>Male</option>
-              <option>Female</option>
-              <option>Other</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
             </select>
           </div>
 
@@ -126,7 +126,6 @@ const ProfileSetup = () => {
               placeholder="Enter phone number"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              required
             />
           </div>
 
@@ -136,7 +135,6 @@ const ProfileSetup = () => {
               type="date"
               value={dob}
               onChange={(e) => setDob(e.target.value)}
-              required
             />
           </div>
 
@@ -149,20 +147,11 @@ const ProfileSetup = () => {
             />
           </div>
 
-          <button className="save-btn" type="submit">
-            Save Profile
-          </button>
-
-          <button
-            type="button"
-            className="logout-btn"
-            onClick={handleLogout}
-          >
-            Logout
+          <button className="save-btn" type="submit" disabled={loading}>
+            {loading ? "Saving..." : "Save Profile"}
           </button>
 
         </form>
-
       </div>
     </section>
   );
