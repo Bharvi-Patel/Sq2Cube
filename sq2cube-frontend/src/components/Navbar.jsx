@@ -21,10 +21,11 @@ const Navbar = () => {
 
       <div className="nav-links">
         <Link to="/">Home</Link>
+        <Link to="/explore">Explore</Link>
         {isLoggedIn && <Link to="/upload">Upload</Link>}
         {isLoggedIn && <Link to="/history">History</Link>}
         {isLoggedIn && user?.is_admin && (
-          <Link to="/admin" style={{ color:"#ff7a00", fontWeight:600 }}>⚙️ Admin</Link>
+          <Link to="/admin" className="admin-link">⚙️ Admin</Link>
         )}
       </div>
 

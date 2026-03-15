@@ -14,14 +14,20 @@ import ForgetPass     from "./pages/ForgetPass.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword  from "./pages/ResetPassword.jsx";
 import ProfileSetup   from "./pages/ProfileSetup.jsx";
+import Explore        from "./pages/Explore.jsx";
+import AboutUs        from "./pages/AboutUs.jsx";
+import ContactUs      from "./pages/ContactUs.jsx";
+import Help           from "./pages/Help.jsx";
 import OAuthSuccess   from "./pages/OAuthSuccess.jsx";
-import AdminPanel     from "./pages/AdminPanel";
+import AdminPanel     from "./pages/AdminPanel.jsx";
+import MaintenanceGate    from "./components/MaintenanceGate.jsx";
 
 function App() {
   return (
     <Router>
       <Header />
 
+      <MaintenanceGate>
       <div style={{ minHeight: "80vh", display: "block" }}>
         <Routes>
 
@@ -34,6 +40,10 @@ function App() {
           <Route path="/reset-password"  element={<ResetPassword />} />
           <Route path="/oauth-success"   element={<OAuthSuccess />} />
           <Route path="/profileSetup"    element={<ProfileSetup />} />
+          <Route path="/explore"          element={<Explore />} />
+          <Route path="/about"          element={<AboutUs />} />
+          <Route path="/contact"        element={<ContactUs />} />
+          <Route path="/help"             element={<Help />} />
 
           {/* Protected */}
           <Route path="/upload"  element={<ProtectedRoute><Upload /></ProtectedRoute>} />
@@ -43,7 +53,8 @@ function App() {
 
         </Routes>
       </div>
-
+      </MaintenanceGate>
+      
       <Footer />
     </Router>
   );

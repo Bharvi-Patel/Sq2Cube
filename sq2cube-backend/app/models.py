@@ -68,6 +68,13 @@ class OTPCode(Base):
     user = relationship("User", back_populates="otp_codes")
 
 
+class SiteSetting(Base):
+    __tablename__ = "site_settings"
+    id    = Column(Integer, primary_key=True, index=True)
+    key   = Column(String, unique=True, index=True, nullable=False)
+    value = Column(String, nullable=False)
+
+
 class Feedback(Base):
     __tablename__ = "feedback"
 

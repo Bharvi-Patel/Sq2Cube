@@ -153,9 +153,59 @@ def delete_account(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    db.query(models.History).filter(
-        models.History.user_id == current_user.id
-    ).delete()
+    user_id = current_user.id
+    db.query(models.History).filter(models.History.user_id == user_id).delete()
+    db.query(models.OTPCode).filter(models.OTPCode.user_id == user_id).delete()
+    db.query(models.PasswordResetToken).filter(models.PasswordResetToken.user_id == user_id).delete()
+    db.query(models.Feedback).filter(models.Feedback.user_id == user_id).delete()
     db.delete(current_user)
     db.commit()
     return {"message": "Account deleted"}
+
+ 
+# ── GET /explore ─────────────────────────────────────────────────────────────
+@router.get("/explore")
+def explore(
+    skip: int = 0,
+    limit: int = 20,
+    db: Session = Depends(get_db)
+):
+    entries = (
+        db.query(models.History, models.User)
+        .join(models.User, models.History.user_id == models.User.id)
+        .filter(
+            models.History.flagged == False,
+            models.User.is_banned == False,
+            models.User.is_verified == True,
+        )
+        .order_by(models.History.created_at.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+ 
+    total = (
+        db.query(func.count(models.History.id))
+        .join(models.User, models.History.user_id == models.User.id)
+        .filter(
+            models.History.flagged == False,
+            models.User.is_banned == False,
+            models.User.is_verified == True,
+        )
+        .scalar()
+    )
+ 
+    return {
+        "total": total,
+        "results": [
+            {
+                "id":       entry.id,
+                "image":    entry.image,
+                "prompt":   entry.prompt,
+                "date":     entry.created_at.strftime("%d %b %Y") if entry.created_at else "",
+                "username": user.username,
+                "avatar":   user.profile_image,
+            }
+            for entry, user in entries
+        ]
+    }
