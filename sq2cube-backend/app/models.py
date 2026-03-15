@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
@@ -9,25 +9,75 @@ class User(Base):
 
     id             = Column(Integer, primary_key=True, index=True)
     email          = Column(String, unique=True, index=True)
-    password       = Column(String)
+    password       = Column(String, nullable=True)
     username       = Column(String)
     bio            = Column(String, nullable=True)
     profile_image  = Column(String, nullable=True)
     gender         = Column(String, nullable=True)
     phone          = Column(String, nullable=True)
     dob            = Column(String, nullable=True)
+    is_verified    = Column(Boolean, default=False)
+    is_admin       = Column(Boolean, default=False)
+    is_banned      = Column(Boolean, default=False)
+    oauth_provider = Column(String, nullable=True)
     created_at     = Column(DateTime(timezone=True), server_default=func.now())
 
-    history        = relationship("History", back_populates="user")
+    history      = relationship("History", back_populates="user")
+    reset_tokens = relationship("PasswordResetToken", back_populates="user")
+    otp_codes    = relationship("OTPCode", back_populates="user")
+    feedbacks    = relationship("Feedback", back_populates="user")
 
 
 class History(Base):
     __tablename__ = "history"
 
-    id         = Column(Integer, primary_key=True, index=True)
-    user_id    = Column(Integer, ForeignKey("users.id"), nullable=False)
-    image      = Column(String, nullable=False)
-    prompt     = Column(String, nullable=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    id           = Column(Integer, primary_key=True, index=True)
+    user_id      = Column(Integer, ForeignKey("users.id"), nullable=False)
+    image        = Column(String, nullable=False)
+    prompt       = Column(String, nullable=True)
+    status       = Column(String, default="success")  # "success" | "failed"
+    flagged      = Column(Boolean, default=False)
+    created_at   = Column(DateTime(timezone=True), server_default=func.now())
 
     user = relationship("User", back_populates="history")
+
+
+class PasswordResetToken(Base):
+    __tablename__ = "password_reset_tokens"
+
+    id         = Column(Integer, primary_key=True, index=True)
+    user_id    = Column(Integer, ForeignKey("users.id"), nullable=False)
+    token      = Column(String, unique=True, index=True)
+    used       = Column(Boolean, default=False)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User", back_populates="reset_tokens")
+
+
+class OTPCode(Base):
+    __tablename__ = "otp_codes"
+
+    id         = Column(Integer, primary_key=True, index=True)
+    user_id    = Column(Integer, ForeignKey("users.id"), nullable=False)
+    code       = Column(String, nullable=False)
+    used       = Column(Boolean, default=False)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User", back_populates="otp_codes")
+
+
+class Feedback(Base):
+    __tablename__ = "feedback"
+
+    id         = Column(Integer, primary_key=True, index=True)
+    user_id    = Column(Integer, ForeignKey("users.id"), nullable=True)
+    name       = Column(String, nullable=True)
+    email      = Column(String, nullable=False)
+    subject    = Column(String, nullable=True)
+    message    = Column(Text, nullable=False)
+    is_read    = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User", back_populates="feedbacks")

@@ -77,6 +77,8 @@ def get_my_profile(
         "gender": current_user.gender,
         "phone": current_user.phone,
         "dob": current_user.dob,
+        "is_admin": current_user.is_admin,
+        "is_banned": current_user.is_banned,
         "member_since": current_user.created_at.strftime("%B %Y") if current_user.created_at else "",
         "total_generations": total,
         "recent": [{"id": e.id, "image": e.image, "prompt": e.prompt} for e in recent],
