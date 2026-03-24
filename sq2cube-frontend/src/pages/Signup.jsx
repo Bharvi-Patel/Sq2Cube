@@ -54,12 +54,12 @@ const Signup = () => {
     setError("");
     setLoading(true);
     try {
-      const data = await api("/verify-otp", {
+      await api("/verify-otp", {
         method: "POST",
         body: { email, code: otp }
       });
-      await login(data.token);
-      navigate("/");
+      // Don't auto-login — redirect to login page with success message
+      navigate("/login", { state: { verified: true } });
     } catch (err) {
       setError(err.message || "Invalid or expired code.");
     } finally {

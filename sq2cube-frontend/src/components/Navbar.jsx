@@ -25,7 +25,7 @@ const Navbar = () => {
         {isLoggedIn && <Link to="/upload">Upload</Link>}
         {isLoggedIn && <Link to="/history">History</Link>}
         {isLoggedIn && user?.is_admin && (
-          <Link to="/admin" className="admin-link">⚙️ Admin</Link>
+          <Link to="/admin" className="admin-link"> Admin</Link>
         )}
       </div>
 

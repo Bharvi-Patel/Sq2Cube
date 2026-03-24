@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
 
@@ -10,7 +10,9 @@ const Login = () => {
   const [loading, setLoading]   = useState(false);
 
   const navigate = useNavigate();
+  const location  = useLocation();
   const { login } = useAuth();
+  const justVerified = location.state?.verified;
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -37,6 +39,16 @@ const Login = () => {
       <div className="auth-card">
         <h1>Welcome Back</h1>
         <p className="auth-subtitle">Login to your Sq2Cube account</p>
+
+        {justVerified && (
+          <div style={{
+            background:"rgba(34,197,94,0.1)", border:"1px solid rgba(34,197,94,0.3)",
+            borderRadius:"10px", padding:"12px 16px", marginBottom:"16px",
+            fontSize:"14px", color:"#22c55e", textAlign:"center"
+          }}>
+            Your email has been verified! Please log in to continue.
+          </div>
+        )}
 
         <form onSubmit={handleLogin}>
           <div className="input-group">
@@ -76,7 +88,7 @@ const Login = () => {
           </button>
 
           <p className="auth-switch">
-            Don't have an account? <Link to="/signup">Sign up here</Link>
+            Don't have an account? <Link to="/signup">Sign Up</Link>
           </p>
         </form>
       </div>

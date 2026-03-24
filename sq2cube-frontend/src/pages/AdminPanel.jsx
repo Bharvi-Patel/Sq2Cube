@@ -279,12 +279,12 @@ const AdminPanel = () => {
 
       {!authLoading && user?.is_admin && (<>
         <div style={s.header}>
-          <h1 style={s.title}>⚙️ Admin Panel</h1>
+          <h1 style={s.title}> Admin Panel</h1>
           <div style={{ display:"flex", alignItems:"center", gap:"16px", flexWrap:"wrap" }}>
             {/* Maintenance toggle */}
             <div style={{ display:"flex", alignItems:"center", gap:"10px", background:"rgba(255,255,255,0.05)", border:`1px solid ${maintenance ? "#ef4444" : "rgba(255,255,255,0.1)"}`, borderRadius:"10px", padding:"8px 14px" }}>
               <span style={{ fontSize:"13px", color: maintenance ? "#ef4444" : "rgba(255,255,255,0.5)" }}>
-                {maintenance ? "🚧 Maintenance ON" : "✅ Site Live"}
+                {maintenance ? "🚧 Maintenance ON" : " Site is Live"}
               </span>
               <div
                 onClick={!maintenanceLoading ? toggleMaintenance : undefined}
@@ -345,7 +345,7 @@ const AdminPanel = () => {
 
             {/* Retention */}
             <div style={s.section}>
-              <p style={s.sectionTitle}>🔄 User Retention (Last 7 Days)</p>
+              <p style={s.sectionTitle}> User Retention (Last 7 Days)</p>
               <div style={{ padding:"20px" }}>
                 <div style={{ display:"flex", alignItems:"center", gap:"20px", flexWrap:"wrap" }}>
                   <div style={{ flex:1, minWidth:"200px" }}>
@@ -369,7 +369,7 @@ const AdminPanel = () => {
 
             {/* Signups chart */}
             <div style={s.section}>
-              <p style={s.sectionTitle}>📈 Signups — Last 7 Days</p>
+              <p style={s.sectionTitle}> Signups — Last 7 Days</p>
               <div style={{ padding:"20px", display:"flex", alignItems:"flex-end", gap:"8px", height:"120px" }}>
                 {stats.signups_per_day.length === 0
                   ? <p style={s.empty}>No signups yet.</p>
@@ -386,7 +386,7 @@ const AdminPanel = () => {
 
             {/* Generations chart */}
             <div style={s.section}>
-              <p style={s.sectionTitle}>🧊 Generations — Last 7 Days</p>
+              <p style={s.sectionTitle}>Model Generations — Last 7 Days</p>
               <div style={{ padding:"20px", display:"flex", alignItems:"flex-end", gap:"8px", height:"120px" }}>
                 {stats.generations_per_day.length === 0
                   ? <p style={s.empty}>No generations yet.</p>
@@ -470,7 +470,7 @@ const AdminPanel = () => {
         {tab === "Generations" && (
           <div style={s.section}>
             <p style={s.sectionTitle}>
-              <span>🧊 All Generations ({filteredGens.length})</span>
+              <span> All Generations ({filteredGens.length})</span>
               {selected.size > 0 && (
                 <button style={{ ...s.btn("#ef4444"), padding:"6px 14px" }} onClick={bulkDelete}>
                   🗑 Delete Selected ({selected.size})
@@ -547,7 +547,7 @@ const AdminPanel = () => {
         {/* ── FEEDBACK ── */}
         {tab === "Feedback" && (
           <div style={s.section}>
-            <p style={s.sectionTitle}>📬 Feedback & Reports ({feedback.length})</p>
+            <p style={s.sectionTitle}> Feedback & Reports ({feedback.length})</p>
             {feedback.length === 0 ? <p style={s.empty}>No feedback yet.</p> : (
               feedback.map(f => (
                 <div key={f.id} style={{
