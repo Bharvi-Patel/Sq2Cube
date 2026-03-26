@@ -88,3 +88,24 @@ class Feedback(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     user = relationship("User", back_populates="feedbacks")
+
+
+class RefreshToken(Base):
+    __tablename__ = "refresh_tokens"
+
+    id         = Column(Integer, primary_key=True, index=True)
+    user_id    = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    token      = Column(String, unique=True, index=True, nullable=False)
+    revoked    = Column(Boolean, default=False, nullable=False)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class LoginAttempt(Base):
+    __tablename__ = "login_attempts"
+
+    id              = Column(Integer, primary_key=True, index=True)
+    email           = Column(String, unique=True, index=True, nullable=False)
+    failed_attempts = Column(Integer, default=0, nullable=False)
+    locked_until    = Column(DateTime(timezone=True), nullable=True)
+    updated_at      = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

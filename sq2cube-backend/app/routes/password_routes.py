@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Request
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from datetime import datetime, timedelta, timezone
 import secrets
 import logging
@@ -8,6 +8,8 @@ import logging
 from app.database import get_db
 from app import models
 from app.auth import hash_password
+from app.limiter import limiter
+from app.validation import validate_email, validate_password
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 import os
 from dotenv import load_dotenv
@@ -35,9 +37,24 @@ FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 class ForgotPasswordRequest(BaseModel):
     email: str
 
+    @validator("email")
+    def _validate_email(cls, value: str) -> str:
+        return validate_email(value)
+
 class ResetPasswordRequest(BaseModel):
     token: str
     new_password: str
+
+    @validator("token")
+    def _validate_token(cls, value: str) -> str:
+        token = value.strip()
+        if len(token) < 20:
+            raise ValueError("Invalid token.")
+        return token
+
+    @validator("new_password")
+    def _validate_new_password(cls, value: str) -> str:
+        return validate_password(value)
 
 
 # ── Send email with full error logging ────────────────────────────────────
@@ -70,7 +87,9 @@ If you did not request this, you can safely ignore this email.
 
 # ── POST /forgot-password ──────────────────────────────────────────────────
 @router.post("/forgot-password")
+@limiter.limit("5/minute")
 async def forgot_password(
+    request: Request,
     data: ForgotPasswordRequest,
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db)
@@ -110,7 +129,9 @@ async def forgot_password(
 
 # ── POST /reset-password ───────────────────────────────────────────────────
 @router.post("/reset-password")
+@limiter.limit("10/minute")
 def reset_password(
+    request: Request,
     data: ResetPasswordRequest,
     db: Session = Depends(get_db)
 ):
