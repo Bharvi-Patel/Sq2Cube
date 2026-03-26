@@ -165,8 +165,12 @@ const AdminPanel = () => {
     if (!replyText.trim()) return;
     setReplySending(true);
     try {
-      await api(`/admin/feedback/${id}/reply`, { method:"POST", body:{ reply: replyText } });
-      setFeedback(feedback.map(f => f.id === id ? { ...f, is_read:true } : f));
+      const res = await api(`/admin/feedback/${id}/reply`, { method:"POST", body:{ reply: replyText } });
+      setFeedback(feedback.map(f => (
+        f.id === id
+          ? { ...f, is_read: true, has_reply: true, latest_reply: res.reply || replyText.trim() }
+          : f
+      )));
       setReplyId(null);
       setReplyText("");
       alert("Reply sent!");
@@ -565,6 +569,20 @@ const AdminPanel = () => {
                   </div>
                   {f.subject && <p style={{ fontSize:"13px", fontWeight:600, color:"#ff7a00", margin:"0 0 6px" }}>{f.subject}</p>}
                   <p style={{ fontSize:"14px", color:"rgba(255,255,255,0.75)", margin:"0 0 12px", lineHeight:1.6 }}>{f.message}</p>
+                  {f.has_reply && (
+                    <div style={{
+                      margin:"0 0 12px",
+                      padding:"10px 12px",
+                      border:"1px solid rgba(59,130,246,0.35)",
+                      background:"rgba(59,130,246,0.08)",
+                      borderRadius:"8px"
+                    }}>
+                      <p style={{ margin:"0 0 6px", fontSize:"12px", color:"#93c5fd", fontWeight:600 }}>Admin Reply</p>
+                      <p style={{ margin:0, fontSize:"13px", color:"rgba(255,255,255,0.82)", whiteSpace:"pre-wrap" }}>
+                        {f.latest_reply || "Reply sent to user email."}
+                      </p>
+                    </div>
+                  )}
 
                   {/* Reply box */}
                   {replyId === f.id && (
@@ -600,9 +618,9 @@ const AdminPanel = () => {
                     )}
                     <button style={s.btn("#3b82f6")} onClick={() => {
                       setReplyId(replyId === f.id ? null : f.id);
-                      setReplyText("");
+                      setReplyText(f.has_reply && f.latest_reply ? f.latest_reply : "");
                     }}>
-                      {replyId === f.id ? "Cancel Reply" : "✉️ Reply"}
+                      {replyId === f.id ? "Close" : (f.has_reply ? "Reply" : "✉️ Reply")}
                     </button>
                     <button style={s.btn("#ef4444")} onClick={() => deleteFeedback(f.id)}>Delete</button>
                   </div>

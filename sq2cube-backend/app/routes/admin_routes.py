@@ -280,6 +280,21 @@ def get_all_feedback(
     admin: models.User = Depends(get_admin_user)
 ):
     items = db.query(models.Feedback).order_by(models.Feedback.created_at.desc()).all()
+    feedback_ids = [f.id for f in items]
+    replies = []
+    if feedback_ids:
+        replies = (
+            db.query(models.FeedbackReply)
+            .filter(models.FeedbackReply.feedback_id.in_(feedback_ids))
+            .order_by(models.FeedbackReply.created_at.desc())
+            .all()
+        )
+
+    latest_reply_by_feedback = {}
+    for reply in replies:
+        if reply.feedback_id not in latest_reply_by_feedback:
+            latest_reply_by_feedback[reply.feedback_id] = reply
+
     return [
         {
             "id":      f.id,
@@ -289,6 +304,8 @@ def get_all_feedback(
             "message": f.message,
             "is_read": f.is_read,
             "date":    f.created_at.strftime("%d %b %Y, %H:%M") if f.created_at else "",
+            "has_reply": f.id in latest_reply_by_feedback,
+            "latest_reply": latest_reply_by_feedback[f.id].reply if f.id in latest_reply_by_feedback else None,
         }
         for f in items
     ]
@@ -343,9 +360,10 @@ This is a reply to your message:
         server.sendmail(MAIL_FROM, f.email, msg.as_string())
         server.quit()
 
+        db.add(models.FeedbackReply(feedback_id=f.id, reply=data.reply.strip()))
         f.is_read = True
         db.commit()
-        return {"message": "Reply sent."}
+        return {"message": "Reply sent.", "reply": data.reply.strip()}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to send email: {str(e)}")
 
@@ -359,6 +377,7 @@ def delete_feedback(
     f = db.query(models.Feedback).filter(models.Feedback.id == feedback_id).first()
     if not f:
         raise HTTPException(status_code=404, detail="Not found.")
+    db.query(models.FeedbackReply).filter(models.FeedbackReply.feedback_id == feedback_id).delete()
     db.delete(f)
     db.commit()
     return {"message": "Deleted."}

@@ -3,6 +3,21 @@ import { useState, useRef } from "react";
 import { FiUpload, FiCamera, FiClipboard } from "react-icons/fi";
 import { MdImage } from "react-icons/md";
 
+const EFFECT_OPTIONS = [
+  "3D Render",
+  "Photorealistic",
+  "Anime",
+  "Cartoon",
+  "Sketch",
+  "Watercolor",
+  "Oil Painting",
+  "Clay Render",
+  "Low Poly",
+  "Pixel Art",
+  "Vintage Film",
+  "Black & White",
+];
+
 const UploadSection = () => {
 
   const [tab, setTab] = useState("image");
@@ -13,6 +28,8 @@ const UploadSection = () => {
 
   const [textPrompt, setTextPrompt] = useState("");
   const [image, setImage] = useState(null);
+  const [selectedEffect, setSelectedEffect] = useState("3D Render");
+  const [showEffects, setShowEffects] = useState(false);
 
   
   /* FILE UPLOAD */
@@ -178,6 +195,37 @@ const UploadSection = () => {
           />
         </div>
       )}
+
+      {/* EFFECT PICKER */}
+      <div className="effect-picker">
+        <button
+          type="button"
+          className="effect-trigger"
+          onClick={() => setShowEffects((prev) => !prev)}
+        >
+          <span className="effect-trigger-label">Style Filter</span>
+          <span className="effect-trigger-value">{selectedEffect}</span>
+          <span className={`effect-chevron ${showEffects ? "open" : ""}`}>▾</span>
+        </button>
+
+        {showEffects && (
+          <div className="effect-dropdown">
+            {EFFECT_OPTIONS.map((effect) => (
+              <button
+                key={effect}
+                type="button"
+                className={`effect-option ${selectedEffect === effect ? "active" : ""}`}
+                onClick={() => {
+                  setSelectedEffect(effect);
+                  setShowEffects(false);
+                }}
+              >
+                {effect}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* GENERATE BUTTON */}
       <button className="gen-btn">Gen Shape</button>

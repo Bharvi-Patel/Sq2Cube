@@ -105,9 +105,9 @@ const s = {
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
 
-  const [profile, setProfile]         = useState(null);
+  const [profile, setProfile]         = useState(user || null);
   const [loading, setLoading]         = useState(true);
   const [deleting, setDeleting]       = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -115,7 +115,17 @@ const Profile = () => {
   useEffect(() => {
     api("/profile/me")
       .then(setProfile)
-      .catch(() => navigate("/login"))
+      .catch((err) => {
+        if (err?.status === 401 || err?.status === 403) {
+          logout();
+          navigate("/login");
+          return;
+        }
+        // Keep existing profile state if available for transient failures.
+        if (!profile) {
+          alert("Could not load profile right now. Please try again.");
+        }
+      })
       .finally(() => setLoading(false));
   }, []);
 

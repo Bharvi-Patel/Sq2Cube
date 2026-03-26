@@ -118,7 +118,7 @@ Your Sq2Cube verification code is:
 This code expires in 10 minutes. Do not share it with anyone.
 
 — The Sq2Cube Team
-        """,
+        """.strip() ,
         subtype="plain"
     )
     fm = FastMail(conf)

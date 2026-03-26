@@ -90,6 +90,15 @@ class Feedback(Base):
     user = relationship("User", back_populates="feedbacks")
 
 
+class FeedbackReply(Base):
+    __tablename__ = "feedback_replies"
+
+    id          = Column(Integer, primary_key=True, index=True)
+    feedback_id = Column(Integer, ForeignKey("feedback.id"), nullable=False, index=True)
+    reply       = Column(Text, nullable=False)
+    created_at  = Column(DateTime(timezone=True), server_default=func.now())
+
+
 class RefreshToken(Base):
     __tablename__ = "refresh_tokens"
 

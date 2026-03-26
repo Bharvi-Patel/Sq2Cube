@@ -31,7 +31,9 @@ export async function api(path, options = {}) {
   const data = await res.json();
 
   if (!res.ok) {
-    throw new Error(data.detail || "Request failed");
+    const err = new Error(data.detail || "Request failed");
+    err.status = res.status;
+    throw err;
   }
 
   return data;

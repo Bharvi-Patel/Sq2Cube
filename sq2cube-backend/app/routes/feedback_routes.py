@@ -20,16 +20,31 @@ class FeedbackCreate(BaseModel):
     def validate_feedback_email(cls, value: str) -> str:
         return validate_email(value)
 
-    @validator("name", "subject", "message")
-    def validate_text_fields(cls, value: Optional[str], field):
+    @validator("name")
+    def validate_name(cls, value: Optional[str]) -> Optional[str]:
         if value is None:
             return value
         cleaned = value.strip()
-        limits = {"name": 80, "subject": 120, "message": 4000}
-        if len(cleaned) > limits[field.name]:
-            raise ValueError(f"{field.name} is too long.")
-        if field.name == "message" and len(cleaned) < 2:
+        if len(cleaned) > 80:
+            raise ValueError("name is too long.")
+        return cleaned
+
+    @validator("subject")
+    def validate_subject(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return value
+        cleaned = value.strip()
+        if len(cleaned) > 120:
+            raise ValueError("subject is too long.")
+        return cleaned
+
+    @validator("message")
+    def validate_message(cls, value: str) -> str:
+        cleaned = value.strip()
+        if len(cleaned) < 2:
             raise ValueError("message is too short.")
+        if len(cleaned) > 4000:
+            raise ValueError("message is too long.")
         return cleaned
 
 @router.post("/feedback")
