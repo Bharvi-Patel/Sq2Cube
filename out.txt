@@ -1,0 +1,2 @@
+STATUS: 500
+BODY: {"detail":"Internal Server Error: Client error '403 Forbidden' for url 'https://api.fal.ai/v1/serverless/files/file/local/upload_1f19cd76.png'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403"}

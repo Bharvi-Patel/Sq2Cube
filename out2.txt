@@ -1,0 +1,1 @@
+ERROR: No credentials found. Set FAL_KEY (or FAL_KEY_ID/FAL_KEY_SECRET) or login via `fal auth login`.

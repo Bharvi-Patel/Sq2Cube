@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import PasswordInput from "../components/PasswordInput";
 
 const GOOGLE_AUTH_URL = "http://localhost:8000/auth/google";
 const GITHUB_AUTH_URL = "http://localhost:8000/auth/github";
@@ -102,17 +103,25 @@ const Signup = () => {
                   value={email} onChange={e => setEmail(e.target.value)} required />
               </div>
 
-              <div className="input-group">
-                <label>Password</label>
-                <input type="password" placeholder="Enter your password"
-                  value={password} onChange={e => setPassword(e.target.value)} required />
-              </div>
+              <PasswordInput
+                id="signup-password"
+                label="Password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="new-password"
+              />
 
-              <div className="input-group">
-                <label>Confirm Password</label>
-                <input type="password" placeholder="Confirm your password"
-                  value={confirm} onChange={e => setConfirm(e.target.value)} required />
-              </div>
+              <PasswordInput
+                id="signup-password-confirm"
+                label="Confirm Password"
+                placeholder="Confirm your password"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                required
+                autoComplete="new-password"
+              />
 
               {error && <p style={{ color:"#ef4444", fontSize:"14px", marginBottom:"10px" }}>{error}</p>}
 

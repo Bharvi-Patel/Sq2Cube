@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { api } from "../services/api";
+import PasswordInput from "../components/PasswordInput";
+import {
+  PASSWORD_REQUIREMENTS_MSG,
+  isPasswordValid,
+} from "../utils/passwordValidation";
 
 const ResetPassword = () => {
   const [searchParams]          = useSearchParams();
@@ -17,8 +22,8 @@ const ResetPassword = () => {
     e.preventDefault();
     setError("");
 
-    if (password.length < 6) {
-      return setError("Password must be at least 6 characters.");
+    if (!isPasswordValid(password)) {
+      return setError(PASSWORD_REQUIREMENTS_MSG);
     }
     if (password !== confirm) {
       return setError("Passwords do not match.");
@@ -70,27 +75,25 @@ const ResetPassword = () => {
             <p className="auth-subtitle">Enter your new password below.</p>
 
             <form onSubmit={handleSubmit}>
-              <div className="input-group">
-                <label>New Password</label>
-                <input
-                  type="password"
-                  placeholder="At least 6 characters"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
+              <PasswordInput
+                id="reset-password-new"
+                label="New Password"
+                placeholder="8+ chars: upper, lower, number, special"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="new-password"
+              />
 
-              <div className="input-group">
-                <label>Confirm Password</label>
-                <input
-                  type="password"
-                  placeholder="Repeat your new password"
-                  value={confirm}
-                  onChange={(e) => setConfirm(e.target.value)}
-                  required
-                />
-              </div>
+              <PasswordInput
+                id="reset-password-confirm"
+                label="Confirm Password"
+                placeholder="Repeat your new password"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                required
+                autoComplete="new-password"
+              />
 
               {error && (
                 <p style={{ color:"#ef4444", fontSize:"14px", marginBottom:"10px" }}>

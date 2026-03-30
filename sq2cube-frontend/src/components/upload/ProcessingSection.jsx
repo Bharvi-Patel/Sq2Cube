@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Loader from "../Loader";
 
 const steps = [
@@ -12,45 +12,49 @@ const steps = [
 const ProcessingSection = ({ file, prompt, onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
 
+  // Generate object URL once — avoid calling createObjectURL on every render
+  const previewUrl = useRef(
+    file instanceof File ? URL.createObjectURL(file) : null
+  ).current;
+
   useEffect(() => {
     if (currentStep < steps.length - 1) {
       const timer = setTimeout(() => {
         setCurrentStep((prev) => prev + 1);
       }, 1200);
-
       return () => clearTimeout(timer);
-    }else {
-    // When all steps finish
-    setTimeout(() => {
-      onComplete();   
-    }, 1000);
-  }
+    } else {
+      const timer = setTimeout(() => {
+        onComplete?.();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
   }, [currentStep]);
 
   return (
     <div className="processing-layout">
 
-      {/* LEFT SIDE - IMAGE */}
+      {/* LEFT SIDE - IMAGE (only shown if a file was uploaded) */}
       <div className="preview-panel">
-        <img
-          src={URL.createObjectURL(file)}
-          alt="preview"
-          className="preview-image"
-        />
+        {previewUrl ? (
+          <img src={previewUrl} alt="preview" className="preview-image"/>
+        ) : (
+          <div className="preview-placeholder">
+            <p>Generating from prompt...</p>
+          </div>
+        )}
       </div>
 
-      {/* RIGHT SIDE - PROCESSING */}
+      {/* RIGHT SIDE - PROCESSING STEPS */}
       <div className="processing-panel">
         <Loader />
-        <h2>Processing Image</h2>
+        <h2>Processing{file ? " Image" : " Prompt"}</h2>
 
         <div className="steps-container">
           {steps.map((step, index) => (
             <div
               key={index}
-              className={`step ${
-                index <= currentStep ? "active" : ""
-              }`}
+              className={`step ${index <= currentStep ? "active" : ""}`}
             >
               {index < currentStep ? "✔" : index === currentStep ? "⏳" : "•"}
               <span>{step}</span>
@@ -65,6 +69,7 @@ const ProcessingSection = ({ file, prompt, onComplete }) => {
           </div>
         )}
       </div>
+
     </div>
   );
 };
