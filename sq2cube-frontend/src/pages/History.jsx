@@ -23,6 +23,8 @@ const History = () => {
     }
   };
 
+  const isGlb = (url) => url && (url.endsWith(".glb") || url.includes(".glb") || url.includes("fal.media") || url.includes("fal.run"));
+
   if (loading) return <div className="history-page"><p>Loading...</p></div>;
   if (error)   return <div className="history-page"><p style={{color:"#ef4444"}}>{error}</p></div>;
 
@@ -31,20 +33,62 @@ const History = () => {
       <h1>Your Generation History</h1>
 
       {history.length === 0 ? (
-        <p className="empty-history">No images generated yet.</p>
+        <p className="empty-history">No models generated yet.</p>
       ) : (
         <div className="history-grid">
           {history.map((item) => (
             <div key={item.id} className="history-card">
-              <img src={item.image} alt="result" className="history-image" />
+
+              {/* 3D Model Preview */}
+              {item.image && isGlb(item.image) ? (
+                <div style={{
+                  width: "100%", height: "180px",
+                  background: "#0d1117", borderRadius: "8px 8px 0 0",
+                  overflow: "hidden", position: "relative"
+                }}>
+                  <model-viewer
+                    src={item.image}
+                    alt="3D model"
+                    auto-rotate
+                    camera-controls
+                    interaction-prompt="none"
+                    shadow-intensity="0.5"
+                    style={{ width: "100%", height: "100%", background: "transparent" }}
+                  />
+                </div>
+              ) : item.image ? (
+                <img src={item.image} alt="result" className="history-image" />
+              ) : (
+                <div style={{
+                  width: "100%", height: "180px", background: "#111",
+                  borderRadius: "8px 8px 0 0", display: "flex",
+                  alignItems: "center", justifyContent: "center",
+                  color: "rgba(255,255,255,0.3)", fontSize: "13px"
+                }}>
+                  {item.status === "failed" ? "❌ Generation Failed" : "No preview"}
+                </div>
+              )}
+
               <div className="history-info">
-                {item.prompt && <p style={{fontSize:"12px",opacity:0.8,marginBottom:"6px"}}>{item.prompt}</p>}
+                {item.prompt && (
+                  <p style={{ fontSize: "12px", opacity: 0.8, marginBottom: "6px", 
+                    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {item.prompt}
+                  </p>
+                )}
                 <p className="history-date">{item.date}</p>
                 <div className="history-actions">
-                  <a href={item.image} download className="download-btn">Download</a>
-                  <button className="delete-btn" onClick={() => deleteItem(item.id)}>Delete</button>
+                  {item.image && (
+                    <a href={item.image} download="model.glb" className="download-btn">
+                      Download GLB
+                    </a>
+                  )}
+                  <button className="delete-btn" onClick={() => deleteItem(item.id)}>
+                    Delete
+                  </button>
                 </div>
               </div>
+
             </div>
           ))}
         </div>

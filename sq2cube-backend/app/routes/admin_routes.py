@@ -24,6 +24,24 @@ MAIL_FROM     = os.getenv("MAIL_FROM")
 MAIL_SERVER   = os.getenv("MAIL_SERVER", "smtp.gmail.com")
 MAIL_PORT     = int(os.getenv("MAIL_PORT", 587))
 
+@router.patch("/generations/{entry_id}/feature")
+def feature_generation(
+    entry_id: int,
+    db: Session = Depends(get_db),
+    admin: models.User = Depends(get_admin_user)
+):
+    entry = db.query(models.History).filter(models.History.id == entry_id).first()
+    if not entry:
+        raise HTTPException(status_code=404, detail="Not found.")
+    
+    # Only allow featuring if user is public
+    if entry.user and not entry.user.is_public:
+        raise HTTPException(status_code=400, detail="User profile is private. Cannot feature.")
+    
+    entry.is_featured = not entry.is_featured
+    db.commit()
+    return {"is_featured": entry.is_featured}
+
 
 # ── Dashboard Stats ────────────────────────────────────────────────────────
 @router.get("/stats")

@@ -1,15 +1,5 @@
 """
 app/services/fal_client.py
-━━━━━━━━━━━━━━━━━━━━━━━━━━
-fal.ai API client for 3D generation.
-
-Models used:
-  - Image → 3D   : fal-ai/triposr          ($0.07/generation)
-  - Multi  → 3D  : tripo3d/tripo/v2.5/multiview-to-3d
-  - Text   → 3D  : fal-ai/triposr (image first via text-to-image, then to 3D)
-                   OR tripo3d/tripo/v2.5/text-to-3d if available
-
-Install:  pip install fal-client
 """
 
 import os
@@ -40,46 +30,35 @@ def _headers():
 
 # ── Upload a base64 image to fal storage → get a public URL ──────────────────
 async def _upload_image(client: httpx.AsyncClient, base64_data_uri: str) -> str:
-    """
-    fal.ai needs a publicly accessible URL.
-    We convert the base64 string to bytes and upload it natively using fal_client.
-    """
     import fal_client
-    
-    # Extract raw base64 bytes
+    import asyncio
+
     if "," in base64_data_uri:
         header, data = base64_data_uri.split(",", 1)
-        mime = header.split(":")[1].split(";")[0]   # e.g. image/png
+        mime = header.split(":")[1].split(";")[0]
     else:
         data = base64_data_uri
         mime = "image/jpeg"
 
     image_bytes = base64.b64decode(data)
-
-    # Use the official SDK to upload
     ext = mime.split("/")[1] if "/" in mime else "png"
     filename = f"upload_{os.urandom(4).hex()}.{ext}"
-    
-    # The sync upload works correctly without blocking async thread too long
-    # or we could use asyncio.to_thread if necessary, but this is fast.
-    import asyncio
+
     url = await asyncio.to_thread(fal_client.upload, image_bytes, mime, file_name=filename)
-    
+
     if not url:
         raise RuntimeError("fal SDK upload failed to return a URL.")
-    
-    logger.info(f"[fal] Image uploaded natively → {url}")
+
+    logger.info(f"[fal] Image uploaded → {url}")
     return url
 
 
 # ── Submit a request to fal queue ─────────────────────────────────────────────
 async def _submit(client: httpx.AsyncClient, model: str, payload: dict) -> dict:
-    """Submit a task to Fal.ai models using the official Python SDK."""
     import fal_client
     import asyncio
-    
+
     def run_sync():
-        # Using subscribe handles polling automatically and safely!
         result = fal_client.subscribe(
             model,
             arguments=payload,
@@ -87,29 +66,45 @@ async def _submit(client: httpx.AsyncClient, model: str, payload: dict) -> dict:
         )
         return result
 
-    # Offload the blocking sync fal_client to a thread
     data = await asyncio.to_thread(run_sync)
 
     if not data:
         raise RuntimeError(f"fal SDK model submission failed or returned empty.")
+
+    # Log raw response so we can debug without wasting credits
+    logger.warning(f"[fal] Raw response keys: {list(data.keys())}")
+    logger.warning(f"[fal] Raw response: {data}")
+
     return data
 
 
 # ── Extract URLs from fal response ────────────────────────────────────────────
 def _extract(data: dict) -> dict:
-    """Pull the .glb URL out of whatever fal returns."""
+    """Pull model URLs out of whatever fal returns."""
     result = {}
 
-    # TripoSR format
+    # TripoSR format — model_mesh
     if "model_mesh" in data:
         mesh = data["model_mesh"]
         url  = mesh.get("url") or mesh.get("content_url")
-        fmt  = mesh.get("content_type", "model/gltf-binary")
-        ext  = "glb" if "gltf" in fmt or "glb" in fmt else "obj"
+        fmt  = mesh.get("content_type", "")
         if url:
-            result[ext] = url
+            if "gltf" in fmt or "glb" in fmt:
+                result["glb"] = url
+            else:
+                # OBJ or unknown — store as both so viewer always has a URL
+                result["obj"] = url
+                result["glb"] = url
+    
+     # Rodin format
+    if "model_urls" in data:
+        mu = data["model_urls"]
+        if isinstance(mu, dict):
+            result["glb"] = mu.get("glb") or mu.get("obj") or ""
+        elif isinstance(mu, str):
+            result["glb"] = mu
 
-    # Tripo3D format
+    # Tripo3D format — mesh
     if "mesh" in data:
         mesh = data["mesh"]
         url  = mesh.get("url") or mesh.get("content_url")
@@ -122,7 +117,17 @@ def _extract(data: dict) -> dict:
 
     # Thumbnail
     if "thumbnail" in data:
-        result["thumbnail"] = data["thumbnail"].get("url", "")
+        t = data["thumbnail"]
+        if isinstance(t, dict):
+            result["thumbnail"] = t.get("url", "")
+        elif isinstance(t, str):
+            result["thumbnail"] = t
+
+    # Last resort — if still no glb, use obj
+    if "obj" in result and "glb" not in result:
+        result["glb"] = result["obj"]
+
+    logger.warning(f"[fal] Extracted URLs: {result}")
 
     if not result:
         logger.warning(f"[fal] Could not extract URLs from response: {data}")
@@ -133,24 +138,19 @@ def _extract(data: dict) -> dict:
 # ── Public API ─────────────────────────────────────────────────────────────────
 
 async def image_to_3d(
-    image_url: str,                     # base64 data URI or public URL
+    image_url: str,
     output_format: str = "glb",
     remove_background: bool = True,
     foreground_ratio: float = 0.9,
     mc_resolution: int = 256,
 ) -> dict:
-    """
-    Single image → 3D using fal-ai/triposr.
-    Returns dict with 'glb' key containing the download URL.
-    """
     async with httpx.AsyncClient() as client:
-        # Upload base64 → public URL if needed
         if image_url.startswith("data:"):
             image_url = await _upload_image(client, image_url)
 
         payload = {
             "image_url":            image_url,
-            "output_format":        output_format,
+            "output_format":        "glb",   # always request glb
             "do_remove_background": remove_background,
             "foreground_ratio":     foreground_ratio,
             "mc_resolution":        mc_resolution,
@@ -162,30 +162,27 @@ async def image_to_3d(
 
 
 async def multi_image_to_3d(
-    image_urls: list,                   # list of base64 data URIs or public URLs
+    image_urls: list,
     output_format: str = "glb",
 ) -> dict:
-    """
-    Multiple images → 3D using tripo3d multiview model.
-    Returns dict with 'glb' key.
-    """
     if not (1 <= len(image_urls) <= 4):
         raise ValueError("multi_image_to_3d accepts 1–4 images.")
 
     async with httpx.AsyncClient() as client:
-        # Upload any base64 images
         uploaded = []
         for url in image_urls:
             if url.startswith("data:"):
                 url = await _upload_image(client, url)
             uploaded.append(url)
 
-        payload = {
-            "image_urls":    uploaded,
-            "output_format": output_format,
-        }
+        # tripo3d multiview expects named fields, not a list
+        field_names = ["front_image_url", "back_image_url", "left_image_url", "right_image_url"]
+        payload = {"output_format": "glb"}
+        for i, url in enumerate(uploaded):
+            payload[field_names[i]] = url
 
         logger.info(f"[fal] Starting multi-image→3D ({len(uploaded)} images)")
+        logger.warning(f"[fal] Multi payload keys: {list(payload.keys())}")
         data = await _submit(client, "tripo3d/tripo/v2.5/multiview-to-3d", payload)
         return _extract(data)
 
@@ -194,19 +191,16 @@ async def text_to_3d(
     prompt: str,
     output_format: str = "glb",
 ) -> dict:
-    """
-    Text prompt → 3D using tripo3d text-to-3d model.
-    Returns dict with 'glb' key.
-    """
     if not prompt.strip():
         raise ValueError("Prompt cannot be empty.")
 
     async with httpx.AsyncClient() as client:
         payload = {
-            "prompt":        prompt,
-            "output_format": output_format,
+            "prompt": prompt,
         }
 
         logger.info(f"[fal] Starting text→3D | prompt='{prompt[:60]}'")
-        data = await _submit(client, "tripo3d/tripo/v2.5/text-to-3d", payload)
+        data = await _submit(client, "fal-ai/hyper3d/rodin", payload)
+        logger.warning(f"[fal] Text→3D raw response keys: {list(data.keys())}")
+        logger.warning(f"[fal] Text→3D raw response: {data}")
         return _extract(data)

@@ -85,6 +85,52 @@ def get_my_profile(
         "activity": activity
     }
 
+@router.get("/profile/me")
+def get_my_profile(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    total = db.query(models.History).filter(models.History.user_id == current_user.id).count()
+    recent = db.query(models.History).filter(
+        models.History.user_id == current_user.id
+    ).order_by(models.History.created_at.desc()).limit(4).all()
+
+    # Activity heatmap
+    from sqlalchemy import func, cast, Date
+    from datetime import datetime, timedelta, timezone
+    one_year_ago = datetime.now(timezone.utc) - timedelta(days=365)
+    activity_raw = (
+        db.query(cast(models.History.created_at, Date).label("day"), func.count().label("count"))
+        .filter(models.History.user_id == current_user.id, models.History.created_at >= one_year_ago)
+        .group_by("day").all()
+    )
+    activity = {str(r.day): r.count for r in activity_raw}
+
+    return {
+        "id":                current_user.id,
+        "username":          current_user.username,
+        "email":             current_user.email,
+        "bio":               current_user.bio,
+        "profile_image":     current_user.profile_image,
+        "gender":            current_user.gender,
+        "phone":             current_user.phone,
+        "dob":               current_user.dob,
+        "is_public":         current_user.is_public,
+        "total_generations": total,
+        "member_since":      current_user.created_at.strftime("%b %Y") if current_user.created_at else "",
+        "recent":            [{"id": e.id, "image": e.image, "prompt": e.prompt} for e in recent],
+        "activity":          activity,
+    }
+
+
+@router.patch("/profile/visibility")
+def toggle_visibility(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    current_user.is_public = not current_user.is_public
+    db.commit()
+    return {"is_public": current_user.is_public}
 
 # ── History ─────────────────────────────────────────────────────────────────
 
