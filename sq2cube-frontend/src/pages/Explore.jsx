@@ -241,7 +241,8 @@ const Explore = () => {
       )
     : items;
 
-  return (
+ 
+    return (
     <div style={s.page}>
 
       {/* Hero */}
@@ -254,7 +255,7 @@ const Explore = () => {
         </p>
       </div>
 
-      {/* Toolbar */}
+      {/* Toolbar
       <div style={s.toolbar}>
         <span style={s.count}>
           {total > 0 ? `${total} generation${total !== 1 ? "s" : ""} shared` : ""}
@@ -268,9 +269,8 @@ const Explore = () => {
             onChange={e => setSearch(e.target.value)}
           />
         </div>
-      </div>
+      </div> */}
 
-      {/* Grid */}
       {loading && items.length === 0 ? (
         <div style={s.loader}>Loading creations...</div>
       ) : filtered.length === 0 ? (
@@ -301,16 +301,37 @@ const Explore = () => {
                 onMouseEnter={() => setHoveredId(item.id)}
                 onMouseLeave={() => setHoveredId(null)}
               >
-                {/* Image */}
+                {/* 3D Model Viewer */}
                 <div style={s.imgWrap}>
-                  <img
-                    src={item.image}
-                    alt={item.prompt || "3D generation"}
-                    style={{
-                      ...s.img,
-                      transform: hoveredId === item.id ? "scale(1.05)" : "scale(1)",
-                    }}
-                  />
+                  {item.glb ? (
+                    <model-viewer
+                      src={item.glb}
+                      alt={item.prompt || "3D model"}
+                      auto-rotate
+                      auto-rotate-delay="0"
+                      rotation-per-second="20deg"
+                      camera-controls
+                      touch-action="pan-y"
+                      interaction-prompt="none"
+                      shadow-intensity="1"
+                      exposure="1"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        background: "transparent",
+                      }}
+                    />
+                  ) : (
+                    <div style={{
+                      width: "100%", height: "100%",
+                      display: "flex", flexDirection: "column",
+                      alignItems: "center", justifyContent: "center",
+                      color: "rgba(255,255,255,0.25)", gap: "8px",
+                    }}>
+                      <span style={{ fontSize: "32px" }}>🧊</span>
+                      <span style={{ fontSize: "12px" }}>No preview</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Card body */}
@@ -337,7 +358,6 @@ const Explore = () => {
             ))}
           </div>
 
-          {/* Load more */}
           {hasMore && !search && (
             <button
               style={s.loadMore}
@@ -352,7 +372,6 @@ const Explore = () => {
         </>
       )}
 
-      {/* CTA for non-logged in users */}
       {!isLoggedIn && (
         <div style={s.ctaBanner}>
           <p style={s.ctaTitle}>Want to see your creation here?</p>

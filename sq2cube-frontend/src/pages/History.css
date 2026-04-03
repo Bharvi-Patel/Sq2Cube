@@ -53,23 +53,23 @@
   justify-content:space-between;
 }
 
-.download-btn{
-  background:#3b82f6;
-  padding:5px 10px;
-  border-radius:6px;
-  color:white;
-  text-decoration:none;
-  font-size:12px;
+.download-btn {
+  background: #3b82f6;
+  padding: 3px 8px;
+  border-radius: 5px;
+  color: white;
+  text-decoration: none;
+  font-size: 11px;
 }
 
-.delete-btn{
-  background:#ef4444;
-  border:none;
-  padding:5px 10px;
-  border-radius:6px;
-  color:white;
-  font-size:12px;
-  cursor:pointer;
+.delete-btn {
+  background: #ef4444;
+  border: none;
+  padding: 3px 8px;
+  border-radius: 5px;
+  color: white;
+  font-size: 11px;
+  cursor: pointer;
 }
 
 .empty-history{

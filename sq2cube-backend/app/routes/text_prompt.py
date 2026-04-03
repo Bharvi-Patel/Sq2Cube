@@ -26,6 +26,7 @@ async def text_prompt_endpoint(
         entry = models.History(
             user_id = current_user.id,
             image   = urls.get("glb") or urls.get("obj") or "",
+            thumbnail = urls.get("thumbnail") or "", 
             prompt  = prompt,
             status  = "success",
         )

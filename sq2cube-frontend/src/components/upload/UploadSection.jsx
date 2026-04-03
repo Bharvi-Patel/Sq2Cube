@@ -3,22 +3,22 @@ import { FiUpload, FiCamera, FiClipboard } from "react-icons/fi";
 import { MdImage } from "react-icons/md";
 import { convertSingleImage, convertMultiImage, convertTextPrompt } from "../../services/Meshyapi";
 
-const EFFECT_TO_PROMPT = {
-  "3D Render":      "clean 3D render, smooth surfaces",
-  "Photorealistic": "photorealistic, detailed textures, realistic lighting",
-  "Anime":          "anime style, cel shaded, vibrant colors",
-  "Cartoon":        "cartoon style, bold outlines, flat colors",
-  "Sketch":         "pencil sketch style, hand drawn",
-  "Watercolor":     "watercolor painting style, soft edges",
-  "Oil Painting":   "oil painting style, thick brush strokes",
-  "Clay Render":    "clay render, matte surface, pastel tones",
-  "Low Poly":       "low poly style, geometric, flat shading",
-  "Pixel Art":      "pixel art style, 8-bit, blocky",
-  "Vintage Film":   "vintage film style, desaturated, grainy",
-  "Black & White":  "black and white, monochrome, high contrast",
-};
+// const EFFECT_TO_PROMPT = {
+//   "3D Render":      "clean 3D render, smooth surfaces",
+//   "Photorealistic": "photorealistic, detailed textures, realistic lighting",
+//   "Anime":          "anime style, cel shaded, vibrant colors",
+//   "Cartoon":        "cartoon style, bold outlines, flat colors",
+//   "Sketch":         "pencil sketch style, hand drawn",
+//   "Watercolor":     "watercolor painting style, soft edges",
+//   "Oil Painting":   "oil painting style, thick brush strokes",
+//   "Clay Render":    "clay render, matte surface, pastel tones",
+//   "Low Poly":       "low poly style, geometric, flat shading",
+//   "Pixel Art":      "pixel art style, 8-bit, blocky",
+//   "Vintage Film":   "vintage film style, desaturated, grainy",
+//   "Black & White":  "black and white, monochrome, high contrast",
+// };
 
-const EFFECT_OPTIONS = Object.keys(EFFECT_TO_PROMPT);
+// const EFFECT_OPTIONS = Object.keys(EFFECT_TO_PROMPT);
 
 const UploadSection = ({ onProcessing, onComplete, onError }) => {
   const [tab, setTab]                   = useState("image");
@@ -107,51 +107,49 @@ const UploadSection = ({ onProcessing, onComplete, onError }) => {
   };
 
   // ── GENERATE ──────────────────────────────────────────────────────────────
-  const handleGenerate = async () => {
-    setError("");
+ const handleGenerate = async () => {
+  setError("");
 
-    if (tab === "image" && !imageFile) {
-      setError("Please upload an image first.");
-      return;
-    }
-    if (tab === "multi" && multiImages.length < 1) {
-      setError("Please upload at least 1 image.");
-      return;
-    }
-    if (tab === "multi" && multiImages.length > 4) {
-      setError("Maximum 4 images allowed.");
-      return;
-    }
-    if (tab === "text" && !textPrompt.trim()) {
-      setError("Please enter a text prompt.");
-      return;
+  if (tab === "image" && !imageFile) {
+    setError("Please upload an image first.");
+    return;
+  }
+  if (tab === "multi" && multiImages.length < 1) {
+    setError("Please upload at least 1 image.");
+    return;
+  }
+  if (tab === "multi" && multiImages.length > 4) {
+    setError("Maximum 4 images allowed.");
+    return;
+  }
+  if (tab === "text" && !textPrompt.trim()) {
+    setError("Please enter a text prompt.");
+    return;
+  }
+
+  setLoading(true);
+  onProcessing?.();
+
+  try {
+    let urls;
+
+    if (tab === "image") {
+      urls = await convertSingleImage(imageFile, "");  // no texture hint
+    } else if (tab === "multi") {
+      const files = multiImages.filter(m => m !== null).map(m => m.file);
+      urls = await convertMultiImage(files);
+    } else {
+      urls = await convertTextPrompt(textPrompt.trim());  // just the raw prompt
     }
 
-    setLoading(true);
-    onProcessing?.();
-
-    try {
-      let urls;
-
-      if (tab === "image") {
-        const textureHint = EFFECT_TO_PROMPT[selectedEffect] ?? "";
-        urls = await convertSingleImage(imageFile, textureHint);
-      } else if (tab === "multi") {
-        const files = multiImages.map(m => m.file);
-        urls = await convertMultiImage(files);
-      } else {
-        const fullPrompt = `${textPrompt}, ${EFFECT_TO_PROMPT[selectedEffect] ?? ""}`.trim();
-        urls = await convertTextPrompt(fullPrompt);
-      }
-
-      onComplete?.({ urls, imageFile, textPrompt, selectedEffect });
-    } catch (err) {
-      setError(err.message ?? "Something went wrong. Please try again.");
-      onError?.(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    onComplete?.({ urls, imageFile, textPrompt, selectedEffect });
+  } catch (err) {
+    setError(err.message ?? "Something went wrong. Please try again.");
+    onError?.(err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="prompt-container">
@@ -319,7 +317,7 @@ const UploadSection = ({ onProcessing, onComplete, onError }) => {
         </div>
       )}
 
-      {/* EFFECT PICKER — text and single image only */}
+      {/* EFFECT PICKER — text and single image only
       {(tab === "text" || tab === "image") && (
         <div className="effect-picker">
           <button type="button" className="effect-trigger" onClick={() => setShowEffects(p => !p)}>
@@ -343,7 +341,7 @@ const UploadSection = ({ onProcessing, onComplete, onError }) => {
             </div>
           )}
         </div>
-      )}
+      )} */}
 
       {/* ERROR */}
       {error && <p style={{ color: "#ef4444", fontSize: "13px", marginTop: "8px" }}>{error}</p>}

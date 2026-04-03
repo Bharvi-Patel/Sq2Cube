@@ -20,7 +20,7 @@ class User(Base):
     is_admin       = Column(Boolean, default=False)
     is_banned      = Column(Boolean, default=False)
     is_public      = Column(Boolean, default=False) 
-    is_featured = Column(Boolean, default=False)
+
     oauth_provider = Column(String, nullable=True)
     created_at     = Column(DateTime(timezone=True), server_default=func.now())
 
@@ -36,11 +36,12 @@ class History(Base):
     id           = Column(Integer, primary_key=True, index=True)
     user_id      = Column(Integer, ForeignKey("users.id"), nullable=False)
     image        = Column(String, nullable=False)
+    thumbnail   = Column(String, nullable=True)  
     prompt       = Column(String, nullable=True)
     status       = Column(String, default="success")  # "success" | "failed"
     flagged      = Column(Boolean, default=False)
     created_at   = Column(DateTime(timezone=True), server_default=func.now())
-
+    is_featured = Column(Boolean, default=False)
     user = relationship("User", back_populates="history")
 
 

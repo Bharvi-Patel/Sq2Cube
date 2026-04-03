@@ -38,25 +38,19 @@ const AdminPanel = () => {
   const [feedback, setFeedback]     = useState([]);
   const [loading, setLoading]       = useState(false);
 
-  // Search
   const [userSearch, setUserSearch] = useState("");
   const [genSearch, setGenSearch]   = useState("");
-
-  // Selected generations for bulk delete
   const [selected, setSelected]     = useState(new Set());
 
-  // User profile modal
-  const [viewUser, setViewUser]     = useState(null);
-  const [userProfile, setUserProfile] = useState(null);
+  const [viewUser, setViewUser]         = useState(null);
+  const [userProfile, setUserProfile]   = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
 
-  // Feedback reply
   const [replyId, setReplyId]       = useState(null);
   const [replyText, setReplyText]   = useState("");
   const [replySending, setReplySending] = useState(false);
 
-  // Maintenance mode
-  const [maintenance, setMaintenance] = useState(false);
+  const [maintenance, setMaintenance]         = useState(false);
   const [maintenanceLoading, setMaintenanceLoading] = useState(false);
 
   useEffect(() => {
@@ -124,6 +118,15 @@ const AdminPanel = () => {
   const flagGen = async (id) => {
     const res = await api(`/admin/generations/${id}/flag`, { method:"PATCH" });
     setGens(generations.map(g => g.id === id ? { ...g, flagged: res.flagged } : g));
+  };
+
+  const featureGen = async (id) => {
+    try {
+      const res = await api(`/admin/generations/${id}/feature`, { method:"PATCH" });
+      setGens(generations.map(g => g.id === id ? { ...g, is_featured: res.is_featured } : g));
+    } catch (err) {
+      alert(err.message || "Failed — user profile may not be public.");
+    }
   };
 
   const toggleSelect = (id) => {
@@ -243,8 +246,6 @@ const AdminPanel = () => {
                   </div>
                   <button style={{ marginLeft:"auto", ...s.btn("#ef4444") }} onClick={() => setViewUser(null)}>✕ Close</button>
                 </div>
-
-                {/* Details */}
                 <div style={{ background:"rgba(255,255,255,0.04)", borderRadius:"10px", padding:"16px", marginBottom:"20px" }}>
                   {[
                     ["Joined",      userProfile.joined],
@@ -254,6 +255,7 @@ const AdminPanel = () => {
                     ["Provider",    userProfile.oauth_provider || "email"],
                     ["Verified",    userProfile.is_verified ? "✅ Yes" : "❌ No"],
                     ["Banned",      userProfile.is_banned ? "🚫 Yes" : "No"],
+                    ["Public",      userProfile.is_public ? "🌍 Yes" : "🔒 No"],
                     ["Generations", userProfile.total_generations],
                     ["Bio",         userProfile.bio || "—"],
                   ].map(([label, val]) => (
@@ -263,8 +265,6 @@ const AdminPanel = () => {
                     </div>
                   ))}
                 </div>
-
-                {/* Recent generations */}
                 {userProfile.recent?.length > 0 && (
                   <>
                     <p style={{ fontSize:"13px", fontWeight:600, marginBottom:"12px", color:"rgba(255,255,255,0.6)" }}>Recent Generations</p>
@@ -283,27 +283,17 @@ const AdminPanel = () => {
 
       {!authLoading && user?.is_admin && (<>
         <div style={s.header}>
-          <h1 style={s.title}> Admin Panel</h1>
+          <h1 style={s.title}>Admin Panel</h1>
           <div style={{ display:"flex", alignItems:"center", gap:"16px", flexWrap:"wrap" }}>
-            {/* Maintenance toggle */}
             <div style={{ display:"flex", alignItems:"center", gap:"10px", background:"rgba(255,255,255,0.05)", border:`1px solid ${maintenance ? "#ef4444" : "rgba(255,255,255,0.1)"}`, borderRadius:"10px", padding:"8px 14px" }}>
               <span style={{ fontSize:"13px", color: maintenance ? "#ef4444" : "rgba(255,255,255,0.5)" }}>
-                {maintenance ? "🚧 Maintenance ON" : " Site is Live"}
+                {maintenance ? "🚧 Maintenance ON" : "Site is Live"}
               </span>
               <div
                 onClick={!maintenanceLoading ? toggleMaintenance : undefined}
-                style={{
-                  width:"40px", height:"22px", borderRadius:"11px",
-                  background: maintenance ? "#ef4444" : "rgba(255,255,255,0.15)",
-                  position:"relative", cursor:"pointer", transition:"0.3s"
-                }}
+                style={{ width:"40px", height:"22px", borderRadius:"11px", background: maintenance ? "#ef4444" : "rgba(255,255,255,0.15)", position:"relative", cursor:"pointer", transition:"0.3s" }}
               >
-                <div style={{
-                  position:"absolute", top:"3px",
-                  left: maintenance ? "21px" : "3px",
-                  width:"16px", height:"16px", borderRadius:"50%",
-                  background:"white", transition:"0.3s"
-                }} />
+                <div style={{ position:"absolute", top:"3px", left: maintenance ? "21px" : "3px", width:"16px", height:"16px", borderRadius:"50%", background:"white", transition:"0.3s" }} />
               </div>
             </div>
             <span style={{ fontSize:"13px", color:"rgba(255,255,255,0.4)" }}>
@@ -347,9 +337,8 @@ const AdminPanel = () => {
               ))}
             </div>
 
-            {/* Retention */}
             <div style={s.section}>
-              <p style={s.sectionTitle}> User Retention (Last 7 Days)</p>
+              <p style={s.sectionTitle}>User Retention (Last 7 Days)</p>
               <div style={{ padding:"20px" }}>
                 <div style={{ display:"flex", alignItems:"center", gap:"20px", flexWrap:"wrap" }}>
                   <div style={{ flex:1, minWidth:"200px" }}>
@@ -371,9 +360,8 @@ const AdminPanel = () => {
               </div>
             </div>
 
-            {/* Signups chart */}
             <div style={s.section}>
-              <p style={s.sectionTitle}> Signups — Last 7 Days</p>
+              <p style={s.sectionTitle}>Signups — Last 7 Days</p>
               <div style={{ padding:"20px", display:"flex", alignItems:"flex-end", gap:"8px", height:"120px" }}>
                 {stats.signups_per_day.length === 0
                   ? <p style={s.empty}>No signups yet.</p>
@@ -388,7 +376,6 @@ const AdminPanel = () => {
               </div>
             </div>
 
-            {/* Generations chart */}
             <div style={s.section}>
               <p style={s.sectionTitle}>Model Generations — Last 7 Days</p>
               <div style={{ padding:"20px", display:"flex", alignItems:"flex-end", gap:"8px", height:"120px" }}>
@@ -424,7 +411,7 @@ const AdminPanel = () => {
                 <table style={s.table}>
                   <thead>
                     <tr>
-                      {["ID","Username","Email","Verified","Provider","Gens","Joined","Actions"].map(h => (
+                      {["ID","Username","Email","Verified","Public","Provider","Gens","Joined","Actions"].map(h => (
                         <th key={h} style={s.th}>{h}</th>
                       ))}
                     </tr>
@@ -434,10 +421,7 @@ const AdminPanel = () => {
                       <tr key={u.id}>
                         <td style={s.td}>{u.id}</td>
                         <td style={s.td}>
-                          <span
-                            style={{ cursor:"pointer", color:"#ff7a00", textDecoration:"underline" }}
-                            onClick={() => openUserProfile(u.id)}
-                          >
+                          <span style={{ cursor:"pointer", color:"#ff7a00", textDecoration:"underline" }} onClick={() => openUserProfile(u.id)}>
                             {u.username}
                           </span>
                         </td>
@@ -445,6 +429,11 @@ const AdminPanel = () => {
                         <td style={s.td}>
                           <span style={s.badge(u.is_verified ? "#22c55e" : "#ef4444")}>
                             {u.is_verified ? "Yes" : "No"}
+                          </span>
+                        </td>
+                        <td style={s.td}>
+                          <span style={s.badge(u.is_public ? "#22c55e" : "#6b7280")}>
+                            {u.is_public ? "🌍 Public" : "🔒 Private"}
                           </span>
                         </td>
                         <td style={s.td}>
@@ -474,7 +463,7 @@ const AdminPanel = () => {
         {tab === "Generations" && (
           <div style={s.section}>
             <p style={s.sectionTitle}>
-              <span> All Generations ({filteredGens.length})</span>
+              <span>All Generations ({filteredGens.length})</span>
               {selected.size > 0 && (
                 <button style={{ ...s.btn("#ef4444"), padding:"6px 14px" }} onClick={bulkDelete}>
                   🗑 Delete Selected ({selected.size})
@@ -500,7 +489,7 @@ const AdminPanel = () => {
                           onChange={toggleSelectAll}
                         />
                       </th>
-                      {["ID","User","Prompt","Status","Flagged","Date","Actions"].map(h => (
+                      {["ID","User","Prompt","Status","Flagged","Featured","Date","Actions"].map(h => (
                         <th key={h} style={s.th}>{h}</th>
                       ))}
                     </tr>
@@ -530,9 +519,21 @@ const AdminPanel = () => {
                             {g.flagged ? "Flagged" : "Clean"}
                           </span>
                         </td>
+                        <td style={s.td}>
+                          <span style={s.badge(g.is_featured ? "#22c55e" : "#6b7280")}>
+                            {g.is_featured ? "⭐ Featured" : "—"}
+                          </span>
+                        </td>
                         <td style={s.td}>{g.date}</td>
                         <td style={s.td}>
-                          <div style={{ display:"flex", gap:"6px" }}>
+                          <div style={{ display:"flex", gap:"6px", flexWrap:"wrap" }}>
+                            <button
+                              style={s.btn(g.is_featured ? "#22c55e" : "#8b5cf6")}
+                              onClick={() => featureGen(g.id)}
+                              title={g.is_featured ? "Remove from Explore" : "Add to Explore (user must be public)"}
+                            >
+                              {g.is_featured ? "★ Unfeature" : "☆ Feature"}
+                            </button>
                             <button style={s.btn(g.flagged ? "#22c55e" : "#f59e0b")} onClick={() => flagGen(g.id)}>
                               {g.flagged ? "Unflag" : "Flag"}
                             </button>
@@ -551,7 +552,7 @@ const AdminPanel = () => {
         {/* ── FEEDBACK ── */}
         {tab === "Feedback" && (
           <div style={s.section}>
-            <p style={s.sectionTitle}> Feedback & Reports ({feedback.length})</p>
+            <p style={s.sectionTitle}>Feedback & Reports ({feedback.length})</p>
             {feedback.length === 0 ? <p style={s.empty}>No feedback yet.</p> : (
               feedback.map(f => (
                 <div key={f.id} style={{
@@ -570,21 +571,13 @@ const AdminPanel = () => {
                   {f.subject && <p style={{ fontSize:"13px", fontWeight:600, color:"#ff7a00", margin:"0 0 6px" }}>{f.subject}</p>}
                   <p style={{ fontSize:"14px", color:"rgba(255,255,255,0.75)", margin:"0 0 12px", lineHeight:1.6 }}>{f.message}</p>
                   {f.has_reply && (
-                    <div style={{
-                      margin:"0 0 12px",
-                      padding:"10px 12px",
-                      border:"1px solid rgba(59,130,246,0.35)",
-                      background:"rgba(59,130,246,0.08)",
-                      borderRadius:"8px"
-                    }}>
+                    <div style={{ margin:"0 0 12px", padding:"10px 12px", border:"1px solid rgba(59,130,246,0.35)", background:"rgba(59,130,246,0.08)", borderRadius:"8px" }}>
                       <p style={{ margin:"0 0 6px", fontSize:"12px", color:"#93c5fd", fontWeight:600 }}>Admin Reply</p>
                       <p style={{ margin:0, fontSize:"13px", color:"rgba(255,255,255,0.82)", whiteSpace:"pre-wrap" }}>
                         {f.latest_reply || "Reply sent to user email."}
                       </p>
                     </div>
                   )}
-
-                  {/* Reply box */}
                   {replyId === f.id && (
                     <div style={{ marginBottom:"12px" }}>
                       <textarea
@@ -611,7 +604,6 @@ const AdminPanel = () => {
                       </div>
                     </div>
                   )}
-
                   <div style={{ display:"flex", gap:"8px", flexWrap:"wrap" }}>
                     {!f.is_read && (
                       <button style={s.btn("#22c55e")} onClick={() => markRead(f.id)}>Mark as Read</button>

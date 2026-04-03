@@ -80,7 +80,6 @@ async def _submit(client: httpx.AsyncClient, model: str, payload: dict) -> dict:
 
 # ── Extract URLs from fal response ────────────────────────────────────────────
 def _extract(data: dict) -> dict:
-    """Pull model URLs out of whatever fal returns."""
     result = {}
 
     # TripoSR format — model_mesh
@@ -92,11 +91,10 @@ def _extract(data: dict) -> dict:
             if "gltf" in fmt or "glb" in fmt:
                 result["glb"] = url
             else:
-                # OBJ or unknown — store as both so viewer always has a URL
                 result["obj"] = url
                 result["glb"] = url
-    
-     # Rodin format
+
+    # Rodin format
     if "model_urls" in data:
         mu = data["model_urls"]
         if isinstance(mu, dict):
@@ -115,13 +113,18 @@ def _extract(data: dict) -> dict:
     if "model_url" in data:
         result["glb"] = data["model_url"]
 
-    # Thumbnail
-    if "thumbnail" in data:
-        t = data["thumbnail"]
-        if isinstance(t, dict):
-            result["thumbnail"] = t.get("url", "")
-        elif isinstance(t, str):
-            result["thumbnail"] = t
+    # Thumbnail — check multiple possible keys
+    for thumb_key in ["thumbnail", "rendered_image", "preview_image", "image"]:
+        if thumb_key in data:
+            t = data[thumb_key]
+            if isinstance(t, dict):
+                url = t.get("url") or t.get("content_url")
+                if url:
+                    result["thumbnail"] = url
+                    break
+            elif isinstance(t, str) and t:
+                result["thumbnail"] = t
+                break
 
     # Last resort — if still no glb, use obj
     if "obj" in result and "glb" not in result:

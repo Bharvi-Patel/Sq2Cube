@@ -82,12 +82,7 @@ app.include_router(password_routes.router)
 app.include_router(oauth_routes.router)
 app.include_router(admin_routes.router)
 app.include_router(feedback_routes.router)
-app.include_router(auth_routes.router)
-app.include_router(user_routes.router)
-app.include_router(password_routes.router)
-app.include_router(oauth_routes.router)
-app.include_router(admin_routes.router)
-app.include_router(feedback_routes.router)
+
 
 # ── 3D Conversion ──────────────────────────────────────────────────────────
 app.include_router(single_image.router, prefix="", tags=["3D Conversion"])

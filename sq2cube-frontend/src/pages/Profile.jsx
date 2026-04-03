@@ -111,23 +111,37 @@ const Profile = () => {
   const [loading, setLoading]         = useState(true);
   const [deleting, setDeleting]       = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [isPublic, setIsPublic]       = useState(false);
+  const [visLoading, setVisLoading]   = useState(false);
 
   useEffect(() => {
     api("/profile/me")
-      .then(setProfile)
+      .then((data) => {
+        setProfile(data);
+        setIsPublic(data.is_public ?? false);
+      })
       .catch((err) => {
         if (err?.status === 401 || err?.status === 403) {
           logout();
           navigate("/login");
           return;
         }
-        // Keep existing profile state if available for transient failures.
-        if (!profile) {
-          alert("Could not load profile right now. Please try again.");
-        }
+        if (!profile) alert("Could not load profile right now. Please try again.");
       })
       .finally(() => setLoading(false));
   }, []);
+
+  const toggleVisibility = async () => {
+    setVisLoading(true);
+    try {
+      const res = await api("/profile/visibility", { method: "PATCH" });
+      setIsPublic(res.is_public);
+    } catch (err) {
+      alert(err.message || "Failed to update visibility.");
+    } finally {
+      setVisLoading(false);
+    }
+  };
 
   const handleDeleteAccount = async () => {
     setDeleting(true);
@@ -161,9 +175,41 @@ const Profile = () => {
           : <div style={s.avatarPlaceholder}>{profile.username?.[0]?.toUpperCase() || "U"}</div>
         }
         <h1 style={s.username}>{profile.username}</h1>
-        <p  style={s.email}>{profile.email}</p>
+        <p style={s.email}>{profile.email}</p>
         {profile.bio && <p style={s.bio}>{profile.bio}</p>}
         <Link to="/profileSetup" style={s.editBtn}>Edit Profile</Link>
+
+        {/* PUBLIC / PRIVATE TOGGLE */}
+        <div style={{
+          display:"flex", alignItems:"center", gap:"12px",
+          background:"rgba(255,255,255,0.05)",
+          border:`1px solid ${isPublic ? "rgba(34,197,94,0.4)" : "rgba(255,255,255,0.1)"}`,
+          borderRadius:"10px", padding:"10px 16px", marginTop:"4px",
+          flexWrap:"wrap", justifyContent:"center"
+        }}>
+          <span style={{ fontSize:"13px", color: isPublic ? "#22c55e" : "rgba(255,255,255,0.5)" }}>
+            {isPublic ? " Public Profile" : " Private Profile"}
+          </span>
+          <div
+            onClick={!visLoading ? toggleVisibility : undefined}
+            style={{
+              width:"40px", height:"22px", borderRadius:"11px",
+              background: isPublic ? "#22c55e" : "rgba(255,255,255,0.15)",
+              position:"relative", cursor:"pointer", transition:"0.3s",
+              flexShrink: 0
+            }}
+          >
+            <div style={{
+              position:"absolute", top:"3px",
+              left: isPublic ? "21px" : "3px",
+              width:"16px", height:"16px", borderRadius:"50%",
+              background:"white", transition:"0.3s"
+            }} />
+          </div>
+          <span style={{ fontSize:"11px", color:"rgba(255,255,255,0.35)" }}>
+            {isPublic ? "Admins can feature your models on Explore" : "Your models won't appear on Explore"}
+          </span>
+        </div>
       </div>
 
       {/* STATS */}
@@ -199,21 +245,45 @@ const Profile = () => {
       <p style={{...s.sectionTitle, marginTop:"28px"}}>
         Recent Generations
         <Link to="/history" style={s.seeAll}>See all →</Link>
-      </p>
-      <div style={s.recentGrid}>
-        {profile.recent && profile.recent.length > 0 ? (
-          profile.recent.map((item) => (
-            <div key={item.id} style={s.recentCard}>
-              <img src={item.image} alt="generation" style={s.recentImg} />
-              {item.prompt && <p style={s.recentPrompt}>{item.prompt}</p>}
-            </div>
-          ))
-        ) : (
-          <p style={{color:"rgba(255,255,255,0.4)", fontSize:"14px", gridColumn:"1/-1"}}>
-            No generations yet. <Link to="/upload" style={{color:"#ff7a00"}}>Start creating!</Link>
-          </p>
-        )}
+        {profile.recent.map((item) => (
+  <div key={item.id} style={s.recentCard}>
+    {item.thumbnail ? (
+      <img src={item.thumbnail} alt="generation" style={s.recentImg} />
+    ) : (
+      <div style={{ width:"100%", aspectRatio:"1", background:"#111", display:"flex", alignItems:"center", justifyContent:"center", color:"rgba(255,255,255,0.3)", fontSize:"24px" }}>
+        
       </div>
+    )}
+    {item.prompt && <p style={s.recentPrompt}>{item.prompt}</p>}
+  </div>
+))}
+      </p>
+     <div style={s.recentGrid}>
+  {profile.recent && profile.recent.length > 0 ? (
+    profile.recent.map((item) => (
+      <div key={item.id} style={s.recentCard}>
+        {item.thumbnail ? (
+          <img src={item.thumbnail} alt="generation" style={s.recentImg} />
+        ) : (
+          <div style={{
+            width: "100%", aspectRatio: "1", background: "#111",
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            color: "rgba(255,255,255,0.25)", gap: "8px", fontSize: "12px"
+          }}>
+            <span style={{ fontSize: "28px" }}>🧊</span>
+            <span>3D Model</span>
+          </div>
+        )}
+        {item.prompt && <p style={s.recentPrompt}>{item.prompt}</p>}
+      </div>
+    ))
+  ) : (
+    <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "14px", gridColumn: "1/-1" }}>
+      No generations yet. <Link to="/upload" style={{ color: "#ff7a00" }}>Start creating!</Link>
+    </p>
+  )}
+</div>
 
       {/* DANGER ZONE */}
       <div style={s.dangerZone}>

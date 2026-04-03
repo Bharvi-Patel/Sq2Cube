@@ -32,6 +32,7 @@ async def multi_image_endpoint(
         entry = models.History(
             user_id = current_user.id,
             image   = urls.get("glb") or urls.get("obj") or "",
+            thumbnail = urls.get("thumbnail") or "", 
             prompt  = "multi-image generation",
             status  = "success",
         )

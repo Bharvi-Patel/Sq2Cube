@@ -42,6 +42,28 @@ def feature_generation(
     db.commit()
     return {"is_featured": entry.is_featured}
 
+@router.get("/generations")
+def get_all_generations(
+    db: Session = Depends(get_db),
+    admin: models.User = Depends(get_admin_user)
+):
+    entries = db.query(models.History).order_by(models.History.created_at.desc()).limit(200).all()
+    return [
+        {
+            "id":          e.id,
+            "user_id":     e.user_id,
+            "username":    e.user.username if e.user else "deleted",
+            "email":       e.user.email if e.user else "",
+            "image":       e.image,
+            "prompt":      e.prompt,
+            "status":      e.status,
+            "flagged":     e.flagged,
+            "is_featured": e.is_featured,
+            "date":        e.created_at.strftime("%d %b %Y, %H:%M") if e.created_at else "",
+        }
+        for e in entries
+    ]
+
 
 # ── Dashboard Stats ────────────────────────────────────────────────────────
 @router.get("/stats")
@@ -138,6 +160,7 @@ def get_maintenance(db: Session = Depends(get_db)):
 @router.get("/users")
 def get_all_users(
     db: Session = Depends(get_db),
+   
     admin: models.User = Depends(get_admin_user)
 ):
     users = db.query(models.User).filter(models.User.is_admin == False).order_by(models.User.created_at.desc()).all()
@@ -153,6 +176,7 @@ def get_all_users(
             "dob":               u.dob,
             "is_verified":       u.is_verified,
             "is_banned":         u.is_banned,
+            "is_public":         u.is_public,
             "oauth_provider":    u.oauth_provider,
             "total_generations": db.query(models.History).filter(models.History.user_id == u.id).count(),
             "joined":            u.created_at.strftime("%d %b %Y") if u.created_at else "",
@@ -226,27 +250,7 @@ def ban_user(
     return {"is_banned": user.is_banned}
 
 
-# ── Generations ────────────────────────────────────────────────────────────
-@router.get("/generations")
-def get_all_generations(
-    db: Session = Depends(get_db),
-    admin: models.User = Depends(get_admin_user)
-):
-    entries = db.query(models.History).order_by(models.History.created_at.desc()).limit(200).all()
-    return [
-        {
-            "id":      e.id,
-            "user_id": e.user_id,
-            "username": e.user.username if e.user else "deleted",
-            "email":   e.user.email if e.user else "",
-            "image":   e.image,
-            "prompt":  e.prompt,
-            "status":  e.status,
-            "flagged": e.flagged,
-            "date":    e.created_at.strftime("%d %b %Y, %H:%M") if e.created_at else "",
-        }
-        for e in entries
-    ]
+
 
 
 @router.delete("/generations/{entry_id}")

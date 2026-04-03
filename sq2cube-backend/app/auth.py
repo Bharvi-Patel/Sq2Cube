@@ -11,7 +11,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 SECRET_KEY = os.getenv("SECRET_KEY", "sq2cube-secret-key-change-in-production")
 ALGORITHM  = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 15))
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 1440))  # 24 hours
 REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", 7))
 
 
@@ -24,14 +24,12 @@ def verify_password(plain_password: str, hashed_password: str):
 
 
 def create_token(data: dict):
-    """Create a JWT token from a dict like {"sub": "123"}"""
     payload = data.copy()
     payload["type"] = "access"
-    payload["exp"] = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    payload["exp"] = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 
-# Keep old name as alias so existing code doesn't break
 def create_access_token(user_id: int, email: str):
     return create_token({"sub": str(user_id), "email": email})
 
@@ -45,7 +43,13 @@ def get_refresh_expiry() -> datetime:
 
 
 def decode_token(token: str):
-    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    if payload.get("type") != "access":
-        raise JWTError("Invalid token type")
-    return int(payload.get("sub"))
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("type") != "access":
+            raise JWTError("Invalid token type")
+        user_id = payload.get("sub")
+        if user_id is None:
+            raise JWTError("No subject in token")
+        return int(user_id)
+    except JWTError as e:
+        raise Exception(f"Token error: {str(e)}")
