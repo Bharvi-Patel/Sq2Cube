@@ -1,9 +1,0 @@
-torch
-torchvision
-opencv-python
-numpy
-matplotlib
-scikit-image
-open3d
-rembg[gpu]          # For fast background removal
-trimesh             # For 3D mesh loading/saving
