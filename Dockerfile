@@ -5,9 +5,7 @@ WORKDIR /app
 COPY sq2cube-backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY sq2cube-backend/app ./app
-COPY sq2cube-backend/*.py ./
-COPY sq2cube-backend/.env* ./
+COPY sq2cube-backend .
 
 EXPOSE 8000
 
