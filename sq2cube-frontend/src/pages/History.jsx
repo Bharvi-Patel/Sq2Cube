@@ -154,38 +154,12 @@ const History = () => {
                   flexDirection: "column", alignItems: "center", justifyContent: "center",
                   color: "rgba(255,255,255,0.3)", gap: "8px"
                 }}>
-                  <span style={{ fontSize: "32px" }}>
-                    {item.status === "failed" ? "❌" : "🧊"}
-                  </span>
-                  <span style={{ fontSize: "12px" }}>
-                    {item.status === "failed" ? "Generation Failed" : "No preview"}
-                  </span>
+                  <span style={{ fontSize: "32px" }}>🧊</span>
+                  <span style={{ fontSize: "12px" }}>No preview</span>
                 </div>
               )}
 
               <div className="history-info">
-                {/* Status badge */}
-                <div style={{ marginBottom: "6px" }}>
-                  <span style={{
-                    display: "inline-block", padding: "2px 8px", borderRadius: "4px",
-                    fontSize: "11px", fontWeight: 600,
-                    background: item.status === "success"
-                      ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)",
-                    color: item.status === "success" ? "#22c55e" : "#ef4444",
-                  }}>
-                    {item.status === "success" ? "✓ Success" : "✗ Failed"}
-                  </span>
-                  {item.is_featured && (
-                    <span style={{
-                      display: "inline-block", padding: "2px 8px", borderRadius: "4px",
-                      fontSize: "11px", fontWeight: 600, marginLeft: "6px",
-                      background: "rgba(255,122,0,0.15)", color: "#ff7a00",
-                    }}>
-                      ⭐ Featured
-                    </span>
-                  )}
-                </div>
-
                 {item.prompt && (
                   <p style={{
                     fontSize: "12px", opacity: 0.75, marginBottom: "6px",
@@ -200,7 +174,7 @@ const History = () => {
                 <div className="history-actions">
                   {item.image && isGlb(item.image) && (
                     <a href={item.image} download="model.glb" className="download-btn">
-                      ⬇ Download GLB
+                      ⬇ GLB
                     </a>
                   )}
                   <button className="delete-btn" onClick={() => deleteItem(item.id)}>
