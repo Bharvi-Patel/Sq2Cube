@@ -26,7 +26,7 @@ MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
 MAIL_FROM     = os.getenv("MAIL_FROM")
 MAIL_SERVER   = os.getenv("MAIL_SERVER", "smtp.gmail.com")
 MAIL_PORT     = int(os.getenv("MAIL_PORT", 587))
-FRONTEND_URL  = os.getenv("FRONTEND_URL", "https://sq2cube.vercel.app/")
+FRONTEND_URL  = os.getenv("FRONTEND_URL", "https://sq2cube.vercel.app")
 
 
 class ForgotPasswordRequest(BaseModel):
