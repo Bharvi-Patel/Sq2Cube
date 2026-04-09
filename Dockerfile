@@ -2,10 +2,12 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY sq2cube-backend/Requirements.txt .
-RUN pip install --no-cache-dir -r Requirements.txt
+COPY sq2cube-backend/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY sq2cube-backend/ .
+COPY sq2cube-backend/app ./app
+COPY sq2cube-backend/*.py ./
+COPY sq2cube-backend/.env* ./
 
 EXPOSE 8000
 
