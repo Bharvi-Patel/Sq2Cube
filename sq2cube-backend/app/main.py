@@ -32,7 +32,7 @@ if _is_prod and _force_https:
     app.add_middleware(HTTPSRedirectMiddleware)
 
 # ── CORS — restrict to your frontend URL only ──────────────────────────────
-allowed_origins_raw = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173")
+allowed_origins_raw = os.getenv("ALLOWED_ORIGINS", "https://sq2cube.vercel.app")
 allowed_origins = [o.strip() for o in allowed_origins_raw.split(",") if o.strip()]
 
 # Add common local development origins to prevent CORS errors in frontends
