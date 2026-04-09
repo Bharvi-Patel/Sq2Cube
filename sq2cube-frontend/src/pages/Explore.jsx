@@ -217,7 +217,7 @@ const Explore = () => {
   const fetchItems = async (newSkip = 0, replace = false) => {
     setLoading(true);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/explore?skip=${newSkip}&limit=${LIMIT}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/explore?skip=${newSkip}&limit=${LIMIT}`);
       const data = await res.json();
       setTotal(data.total);
       setItems(prev => replace ? data.results : [...prev, ...data.results]);

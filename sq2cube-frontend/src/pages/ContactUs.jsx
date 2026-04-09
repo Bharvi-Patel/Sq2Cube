@@ -115,7 +115,7 @@ const ContactUs = () => {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("http://127.0.0.1:8000/feedback", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/feedback`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),

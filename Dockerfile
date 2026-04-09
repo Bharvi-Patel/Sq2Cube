@@ -1,11 +1,13 @@
 FROM python:3.11-slim
 
+# cache bust 2
+
 WORKDIR /app
 
 COPY sq2cube-backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY sq2cube-backend .
+COPY sq2cube-backend/ .
 
 EXPOSE 8000
 

@@ -7,7 +7,7 @@ const MaintenanceGate = ({ children }) => {
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/admin/maintenance")
+    fetch(`${import.meta.env.VITE_API_URL}/admin/maintenance`)
       .then(res => res.json())
       .then(data => setMaintenance(data.maintenance_mode))
       .catch(() => {})

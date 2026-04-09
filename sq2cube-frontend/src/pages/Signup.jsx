@@ -4,8 +4,8 @@ import { api } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import PasswordInput from "../components/PasswordInput";
 
-const GOOGLE_AUTH_URL = "http://localhost:8000/auth/google";
-const GITHUB_AUTH_URL = "http://localhost:8000/auth/github";
+const GOOGLE_AUTH_URL = `${import.meta.env.VITE_API_URL}/auth/google`;
+const GITHUB_AUTH_URL = `${import.meta.env.VITE_API_URL}/auth/github`;
 
 const Signup = () => {
   const navigate = useNavigate();
